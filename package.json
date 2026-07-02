@@ -1,0 +1,16 @@
+{
+  "name": "translation-bakeoff",
+  "version": "1.0.0",
+  "description": "Standalone script to compare LLM translation (Gemini) vs Teams native translation on real messages, before building any Azure/Teams infrastructure.",
+  "main": "bakeoff.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node bakeoff.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.4.7"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
