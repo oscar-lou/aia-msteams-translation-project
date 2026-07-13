@@ -1,0 +1,10 @@
+{
+  "files.exclude": {
+    "node_modules": true
+  },
+  "search.exclude": {
+    "node_modules": true,
+    "translate-app.zip": true
+  },
+  "editor.formatOnSave": false
+}

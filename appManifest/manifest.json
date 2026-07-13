@@ -1,0 +1,50 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/teams/v1.19/MicrosoftTeams.schema.json",
+  "manifestVersion": "1.19",
+  "version": "1.0.0",
+  "id": "0c653553-df1e-4145-aec4-4ea7cccbf291",
+  "developer": {
+    "name": "Oscar Lou",
+    "websiteUrl": "https://example.com",
+    "privacyUrl": "https://example.com/privacy",
+    "termsOfUseUrl": "https://example.com/terms"
+  },
+  "name": {
+    "short": "Translate",
+    "full": "Message Translator"
+  },
+  "description": {
+    "short": "Translate any Teams message in place.",
+    "full": "Adds a right-click Translate action to any message in Microsoft Teams and shows the translation in a pop-up."
+  },
+  "icons": {
+    "color": "color.png",
+    "outline": "outline.png"
+  },
+  "accentColor": "#2A6FF0",
+  "bots": [
+    {
+      "botId": "0c653553-df1e-4145-aec4-4ea7cccbf291",
+      "scopes": ["personal", "team", "groupChat"],
+      "isNotificationOnly": false,
+      "supportsFiles": false
+    }
+  ],
+  "composeExtensions": [
+    {
+      "botId": "0c653553-df1e-4145-aec4-4ea7cccbf291",
+      "commands": [
+        {
+          "id": "translateMessage",
+          "type": "action",
+          "title": "Translate",
+          "description": "Translate this message",
+          "context": ["message"],
+          "fetchTask": true
+        }
+      ]
+    }
+  ],
+  "permissions": ["identity"],
+  "validDomains": []
+}

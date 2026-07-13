@@ -1,0 +1,19 @@
+{
+  "name": "teams-translate-extension",
+  "version": "1.0.0",
+  "description": "Microsoft Teams message extension that adds a right-click Translate action, powered by Google Gemini.",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "dependencies": {
+    "botbuilder": "^4.23.1",
+    "express": "^4.21.2",
+    "dotenv": "^16.4.7"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

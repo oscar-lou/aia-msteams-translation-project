@@ -1,0 +1,28 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "npm: install",
+      "type": "shell",
+      "command": "npm install",
+      "problemMatcher": [],
+      "presentation": { "reveal": "silent", "panel": "shared" }
+    },
+    {
+      "label": "Start dev tunnel",
+      "type": "shell",
+      "command": "devtunnel host -p 3978 --allow-anonymous",
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": { "reveal": "always", "panel": "dedicated" },
+      "detail": "Exposes localhost:3978 over HTTPS so Teams can reach the bot. Leave running."
+    },
+    {
+      "label": "Package Teams app",
+      "type": "shell",
+      "command": "cd appManifest && zip ../translate-app.zip manifest.json color.png outline.png",
+      "problemMatcher": [],
+      "detail": "Zips the manifest + icons into a sideloadable Teams app package."
+    }
+  ]
+}
