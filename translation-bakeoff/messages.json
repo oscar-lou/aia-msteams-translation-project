@@ -1,0 +1,61 @@
+[
+  {
+    "id": "sample-1",
+    "text": "三送飯鐵粉",
+    "teams_native_translation": "Third, sending rice with iron fans"
+  },
+  {
+    "id": "sample-2",
+    "text": "麻煩你哋盡快覆返個報價,客戶今日要決定",
+    "teams_native_translation": "Please reply with the quote as soon as possible; the client needs to decide today"
+  },
+  {
+    "id": "sample-3",
+    "text": "Please confirm receipt of the signed NDA by EOD.",
+    "teams_native_translation": "請確認於 EOD 前已收到簽署的保密協議"
+  },
+  {
+    "id": "sample-4",
+    "category": "Corporate Idioms (English)",
+    "text": "I honestly don't have the bandwidth to take this offline right now. Can we put a pin in it until Q3?",
+    "teams_native_translation": "說實話，我現在真的沒精力把它關掉。我們能先擱置到第三季嗎？"
+  },
+  {
+    "id": "sample-5",
+    "category": "Tech/Business Jargon (English)",
+    "text": "Before we finalize the vendor, let's do a quick bake-off between the two platforms. We also need to make sure we're dogfooding our own API in staging.",
+    "teams_native_translation": "在確定提供商之前，先來個快速的烘焙大賽。我們也必須確保在 Stage 上對自己的 API 進行過度優化"
+  },
+  {
+    "id": "sample-6",
+    "category": "Passive-Aggressive / Diplomatic (English)",
+    "text": "As per my last email, going forward I would appreciate it if we could avoid working in silos. Please loop me in on all client-facing comms.",
+    "teams_native_translation": "根據我上封信，未來我希望能避免各自為政。請把所有面向客戶的溝通都通知我。"
+  },
+  {
+    "id": "sample-7",
+    "category": "Workplace Slang (Traditional Chinese)",
+    "text": "這個專案大家都在內卷，主管又整天畫大餅，最後出了事還不是我們基層要背黑鍋。",
+    "teams_native_translation": "Everyone is fiercely competitive on this project, the supervisor keeps making empty promises, and in the end, when something goes wrong, it's us frontline staff who have to take the blame."
+  },
+  {
+    "id": "sample-8",
+    "category": "High-Context Nuance (Traditional Chinese)",
+    "text": "客戶那邊好像有點微詞，我們最好先超前部署，免得到時候被殺個措手不及。",
+    "teams_native_translation": "It seems the client has some better complaints. We'd better plan ahead to avoid being caught off guard when the time comes."
+  },
+  {
+    "id": "sample-9",
+    "category": "Legal (Traditional Chinese)",
+    "text": "若乙方未能履行付款義務，甲方及擔保人須負連帶責任，且不得以不可抗力為由主張免責。",
+    "teams_native_translation": "If Party B fails to perform its payment obligations, Party A and the guarantor shall bear joint responsibility, and may not claim exemption on the grounds of force majeure.",
+    "note": "SIMULATED baseline — not pulled from Teams. Legal test: '連帶責任' means 'joint AND SEVERAL liability' (each party can be held liable for the full amount), which is legally distinct from plain 'joint responsibility' (liability split proportionally). If you can, replace this with Teams' real translation before treating it as evidence."
+  },
+  {
+    "id": "sample-10",
+    "category": "Financial Jargon (English)",
+    "text": "Given the current burn rate, we only have about four months of runway left, and the lender is now asking for a bigger haircut on the collateral.",
+    "teams_native_translation": "鑑於目前的燃燒率，我們只剩下大約四個月的跑道，貸款人現在要求對抵押品進行更大的理髮。",
+    "note": "SIMULATED baseline — not pulled from Teams. Financial test: three domain terms prone to literal mistranslation — 'runway' (financial runway vs. airport runway/跑道), 'haircut' (valuation reduction vs. literal haircut/理髮), 'burn rate' (rendered too literally as 燃燒率). If you can, replace this with Teams' real translation before treating it as evidence."
+  }
+]
