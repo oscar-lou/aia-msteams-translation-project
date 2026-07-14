@@ -84,12 +84,8 @@ const CJK_RE = /[一-鿿㐀-䶿]/;
 
 // DeepL has no per-message auto language-detection prompt like the Gemini path
 // above, so direction is decided here from the input script instead.
-function deeplTargetLangFor(text) {
-  // Note: DeepL's "ZH" target currently produces Simplified Chinese only — there
-  // is no separate Traditional-Chinese target in this API version, so this is not
-  // a fair comparison for CHINESE_SCRIPT=Traditional workspaces without a manual
-  // script-conversion step afterward.
-  return CJK_RE.test(text) ? "EN-US" : "ZH";
+function isChineseText(text) {
+  return CJK_RE.test(text);
 }
 
 async function translateWithDeepL(text, targetLang) {
@@ -205,23 +201,53 @@ async function main() {
 
   // --- DeepL pass (optional second engine) --------------------------------
   // Skipped entirely, with existing Gemini results untouched, if no key is set.
+  // Chinese -> English input only needs one DeepL target (EN-US). English ->
+  // Chinese input is tested against BOTH ZH-HANT (Traditional, standard written
+  // Chinese) and YUE (Cantonese) so the two registers can be compared directly.
   const deeplEnabled = !!process.env.DEEPL_API_KEY;
   if (deeplEnabled) {
     console.log(`\nRunning ${rows.length} message(s) through DeepL...`);
     for (const row of rows) {
       const cached = cache[row.id];
-      if (cached && cached.text === row.text && cached.deepl_translation) {
-        row.deepl_translation = cached.deepl_translation;
-        continue;
+      const cacheHit = cached && cached.text === row.text ? cached : null;
+
+      if (isChineseText(row.text)) {
+        if (cacheHit && cacheHit.deepl_translation) {
+          row.deepl_translation = cacheHit.deepl_translation;
+        } else {
+          try {
+            row.deepl_translation = await translateWithDeepL(row.text, "EN-US");
+            cache[row.id] = { ...(cache[row.id] || {}), text: row.text, deepl_translation: row.deepl_translation };
+          } catch (err) {
+            row.deepl_error = String(err.message || err);
+          }
+          await sleep(300);
+        }
+      } else {
+        if (cacheHit && cacheHit.deepl_zh_hant) {
+          row.deepl_zh_hant = cacheHit.deepl_zh_hant;
+        } else {
+          try {
+            row.deepl_zh_hant = await translateWithDeepL(row.text, "ZH-HANT");
+            cache[row.id] = { ...(cache[row.id] || {}), text: row.text, deepl_zh_hant: row.deepl_zh_hant };
+          } catch (err) {
+            row.deepl_zh_hant_error = String(err.message || err);
+          }
+          await sleep(300);
+        }
+
+        if (cacheHit && cacheHit.deepl_yue) {
+          row.deepl_yue = cacheHit.deepl_yue;
+        } else {
+          try {
+            row.deepl_yue = await translateWithDeepL(row.text, "YUE");
+            cache[row.id] = { ...(cache[row.id] || {}), text: row.text, deepl_yue: row.deepl_yue };
+          } catch (err) {
+            row.deepl_yue_error = String(err.message || err);
+          }
+          await sleep(300);
+        }
       }
-      try {
-        const targetLang = deeplTargetLangFor(row.text);
-        row.deepl_translation = await translateWithDeepL(row.text, targetLang);
-        cache[row.id] = { ...(cache[row.id] || {}), text: row.text, deepl_translation: row.deepl_translation };
-      } catch (err) {
-        row.deepl_error = String(err.message || err);
-      }
-      await sleep(300);
     }
     fs.writeFileSync(CACHE_FILE, JSON.stringify(cache, null, 2), "utf8");
   } else {
@@ -231,9 +257,9 @@ async function main() {
   // --- Write a clean side-by-side Markdown report ------------------------
   let md = `# Translation Bake-off Results\n\n`;
   md += `Generated ${new Date().toISOString()}\n\n`;
-  md += `Blind-review tip: cover the "Teams Native"${deeplEnabled ? `, "Gemini", and "DeepL"` : ` and "Gemini"`} column\n`;
-  md += `headers when showing this to reviewers, so the ranking isn't biased by knowing\n`;
-  md += `which engine is which.\n\n`;
+  md += `Blind-review tip: cover the engine-name headers ("Teams Native", "Gemini",\n`;
+  md += `"DeepL") when showing this to reviewers, so the ranking isn't biased by\n`;
+  md += `knowing which engine is which.\n\n`;
 
   for (const row of rows) {
     md += `---\n\n`;
@@ -246,10 +272,23 @@ async function main() {
       md += `**Gemini:**\n> ${row.llm_translation}\n\n`;
     }
     if (deeplEnabled) {
-      if (row.deepl_error) {
-        md += `**DeepL:** _Error: ${row.deepl_error}_\n\n`;
+      if (isChineseText(row.text)) {
+        if (row.deepl_error) {
+          md += `**DeepL:** _Error: ${row.deepl_error}_\n\n`;
+        } else {
+          md += `**DeepL:**\n> ${row.deepl_translation}\n\n`;
+        }
       } else {
-        md += `**DeepL:**\n> ${row.deepl_translation}\n\n`;
+        if (row.deepl_zh_hant_error) {
+          md += `**DeepL (Traditional Chinese):** _Error: ${row.deepl_zh_hant_error}_\n\n`;
+        } else {
+          md += `**DeepL (Traditional Chinese):**\n> ${row.deepl_zh_hant}\n\n`;
+        }
+        if (row.deepl_yue_error) {
+          md += `**DeepL (Cantonese):** _Error: ${row.deepl_yue_error}_\n\n`;
+        } else {
+          md += `**DeepL (Cantonese):**\n> ${row.deepl_yue}\n\n`;
+        }
       }
     }
   }
