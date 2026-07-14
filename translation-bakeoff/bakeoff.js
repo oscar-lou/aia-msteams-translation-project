@@ -79,6 +79,42 @@ async function translateBatch(msgs) {
   return parseBatchResponse(rawText, msgs.length);
 }
 
+// --- DeepL (optional second engine, for side-by-side comparison) -------
+const CJK_RE = /[一-鿿㐀-䶿]/;
+
+// DeepL has no per-message auto language-detection prompt like the Gemini path
+// above, so direction is decided here from the input script instead.
+function deeplTargetLangFor(text) {
+  // Note: DeepL's "ZH" target currently produces Simplified Chinese only — there
+  // is no separate Traditional-Chinese target in this API version, so this is not
+  // a fair comparison for CHINESE_SCRIPT=Traditional workspaces without a manual
+  // script-conversion step afterward.
+  return CJK_RE.test(text) ? "EN-US" : "ZH";
+}
+
+async function translateWithDeepL(text, targetLang) {
+  if (!process.env.DEEPL_API_KEY) {
+    throw new Error("DEEPL_API_KEY is not set.");
+  }
+  const resp = await fetch("https://api-free.deepl.com/v2/translate", {
+    method: "POST",
+    headers: {
+      Authorization: `DeepL-Auth-Key ${process.env.DEEPL_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ text: [text], target_lang: targetLang }),
+  });
+  if (!resp.ok) {
+    throw new Error(`DeepL API ${resp.status}: ${await resp.text()}`);
+  }
+  const data = await resp.json();
+  const translation = data.translations?.[0];
+  if (!translation) {
+    throw new Error(`DeepL returned no translation: ${JSON.stringify(data)}`);
+  }
+  return translation.text;
+}
+
 function chunk(arr, size) {
   const out = [];
   for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
@@ -167,11 +203,37 @@ async function main() {
   rows.length = 0;
   rows.push(...messages.map((m) => rowsById.get(m.id)));
 
+  // --- DeepL pass (optional second engine) --------------------------------
+  // Skipped entirely, with existing Gemini results untouched, if no key is set.
+  const deeplEnabled = !!process.env.DEEPL_API_KEY;
+  if (deeplEnabled) {
+    console.log(`\nRunning ${rows.length} message(s) through DeepL...`);
+    for (const row of rows) {
+      const cached = cache[row.id];
+      if (cached && cached.text === row.text && cached.deepl_translation) {
+        row.deepl_translation = cached.deepl_translation;
+        continue;
+      }
+      try {
+        const targetLang = deeplTargetLangFor(row.text);
+        row.deepl_translation = await translateWithDeepL(row.text, targetLang);
+        cache[row.id] = { ...(cache[row.id] || {}), text: row.text, deepl_translation: row.deepl_translation };
+      } catch (err) {
+        row.deepl_error = String(err.message || err);
+      }
+      await sleep(300);
+    }
+    fs.writeFileSync(CACHE_FILE, JSON.stringify(cache, null, 2), "utf8");
+  } else {
+    console.log("\nDEEPL_API_KEY not set — skipping the DeepL column.");
+  }
+
   // --- Write a clean side-by-side Markdown report ------------------------
   let md = `# Translation Bake-off Results\n\n`;
   md += `Generated ${new Date().toISOString()}\n\n`;
-  md += `Blind-review tip: cover the "Teams Native" and "LLM" column headers when showing\n`;
-  md += `this to reviewers, so the ranking isn't biased by knowing which engine is which.\n\n`;
+  md += `Blind-review tip: cover the "Teams Native"${deeplEnabled ? `, "Gemini", and "DeepL"` : ` and "Gemini"`} column\n`;
+  md += `headers when showing this to reviewers, so the ranking isn't biased by knowing\n`;
+  md += `which engine is which.\n\n`;
 
   for (const row of rows) {
     md += `---\n\n`;
@@ -179,9 +241,16 @@ async function main() {
     md += `**Original:**\n> ${row.text}\n\n`;
     md += `**Teams Native:**\n> ${row.teams_native_translation || "_(not filled in — paste Teams' translation into messages.json)_"}\n\n`;
     if (row.error) {
-      md += `**LLM:** _Error: ${row.error}_\n\n`;
+      md += `**Gemini:** _Error: ${row.error}_\n\n`;
     } else {
-      md += `**LLM:**\n> ${row.llm_translation}\n\n`;
+      md += `**Gemini:**\n> ${row.llm_translation}\n\n`;
+    }
+    if (deeplEnabled) {
+      if (row.deepl_error) {
+        md += `**DeepL:** _Error: ${row.deepl_error}_\n\n`;
+      } else {
+        md += `**DeepL:**\n> ${row.deepl_translation}\n\n`;
+      }
     }
   }
 
