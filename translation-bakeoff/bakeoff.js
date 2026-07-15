@@ -111,6 +111,67 @@ async function translateWithDeepL(text, targetLang) {
   return translation.text;
 }
 
+// --- Azure OpenAI (optional third engine) -------------------------------
+// Reuses the exact same batch prompt/parser Gemini uses above, just run as a
+// "batch of one" — so translation instructions never fork between engines.
+function azureOpenAIErrorReason(status) {
+  switch (status) {
+    case 401:
+      return "invalid API key";
+    case 403:
+      return "access forbidden (check resource region/permissions)";
+    case 404:
+      return "deployment not found (check AZURE_OPENAI_DEPLOYMENT and endpoint)";
+    case 429:
+      return "rate limit or quota exceeded";
+    default:
+      return `HTTP ${status}`;
+  }
+}
+
+async function translateWithAzureOpenAI(text) {
+  const endpoint = process.env.AZURE_OPENAI_ENDPOINT;
+  const apiKey = process.env.AZURE_OPENAI_API_KEY;
+  const deployment = process.env.AZURE_OPENAI_DEPLOYMENT;
+  const apiVersion = process.env.AZURE_OPENAI_API_VERSION || "2024-10-21";
+  if (!endpoint || !apiKey || !deployment) {
+    throw new Error("Azure OpenAI is not fully configured.");
+  }
+
+  const url = `${endpoint}/openai/deployments/${deployment}/chat/completions?api-version=${apiVersion}`;
+  const userContent = `[[[1]]]\n${text}\n[[[/1]]]`;
+
+  const resp = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "api-key": apiKey,
+    },
+    body: JSON.stringify({
+      messages: [
+        { role: "system", content: buildBatchSystemPrompt() },
+        { role: "user", content: userContent },
+      ],
+      temperature: 0.2,
+    }),
+  });
+  if (!resp.ok) {
+    const reason = azureOpenAIErrorReason(resp.status);
+    throw new Error(`Azure OpenAI ${reason}: ${await resp.text()}`);
+  }
+  const data = await resp.json();
+  const choice = data.choices?.[0];
+  if (!choice) {
+    throw new Error(`Azure OpenAI returned no choices: ${JSON.stringify(data)}`);
+  }
+  const rawText = choice.message?.content || "";
+  const [translation] = parseBatchResponse(rawText, 1);
+  if (translation === null) {
+    throw new Error("Azure OpenAI response could not be parsed for the expected marker format.");
+  }
+  return translation;
+}
+
 function chunk(arr, size) {
   const out = [];
   for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
@@ -254,12 +315,50 @@ async function main() {
     console.log("\nDEEPL_API_KEY not set — skipping the DeepL column.");
   }
 
+  // --- Azure OpenAI pass (optional third engine) --------------------------
+  // Skipped entirely, with existing Gemini/DeepL results untouched, if the
+  // resource isn't fully configured. Uses the same buildBatchSystemPrompt()
+  // instructions as Gemini, so it's a fair like-for-like comparison.
+  const azureEnabled = !!(
+    process.env.AZURE_OPENAI_ENDPOINT &&
+    process.env.AZURE_OPENAI_API_KEY &&
+    process.env.AZURE_OPENAI_DEPLOYMENT
+  );
+  if (azureEnabled) {
+    console.log(`\nRunning ${rows.length} message(s) through Azure OpenAI...`);
+    for (const row of rows) {
+      const cached = cache[row.id];
+      const cacheHit = cached && cached.text === row.text ? cached : null;
+
+      if (cacheHit && cacheHit.azure_openai_translation) {
+        row.azure_openai_translation = cacheHit.azure_openai_translation;
+        continue;
+      }
+      try {
+        row.azure_openai_translation = await translateWithAzureOpenAI(row.text);
+        cache[row.id] = {
+          ...(cache[row.id] || {}),
+          text: row.text,
+          azure_openai_translation: row.azure_openai_translation,
+        };
+      } catch (err) {
+        row.azure_openai_error = String(err.message || err);
+      }
+      await sleep(300);
+    }
+    fs.writeFileSync(CACHE_FILE, JSON.stringify(cache, null, 2), "utf8");
+  } else {
+    console.log(
+      "\nAzure OpenAI env vars not fully set — skipping the Azure OpenAI column."
+    );
+  }
+
   // --- Write a clean side-by-side Markdown report ------------------------
   let md = `# Translation Bake-off Results\n\n`;
   md += `Generated ${new Date().toISOString()}\n\n`;
   md += `Blind-review tip: cover the engine-name headers ("Teams Native", "Gemini",\n`;
-  md += `"DeepL") when showing this to reviewers, so the ranking isn't biased by\n`;
-  md += `knowing which engine is which.\n\n`;
+  md += `"DeepL", "Azure OpenAI") when showing this to reviewers, so the ranking\n`;
+  md += `isn't biased by knowing which engine is which.\n\n`;
 
   for (const row of rows) {
     md += `---\n\n`;
@@ -289,6 +388,13 @@ async function main() {
         } else {
           md += `**DeepL (Cantonese):**\n> ${row.deepl_yue}\n\n`;
         }
+      }
+    }
+    if (azureEnabled) {
+      if (row.azure_openai_error) {
+        md += `**Azure OpenAI:** _Error: ${row.azure_openai_error}_\n\n`;
+      } else {
+        md += `**Azure OpenAI:**\n> ${row.azure_openai_translation}\n\n`;
       }
     }
   }
