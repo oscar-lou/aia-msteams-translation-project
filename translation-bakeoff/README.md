@@ -3,17 +3,24 @@
 Answers one question before any Teams/Azure work: **does an LLM actually translate our
 Chinese ↔ English messages better than what Teams already gives us?**
 
-No Azure, no bot, no Teams app. Just Node.js and an OpenAI API key.
+No Azure, no bot, no Teams app. Just Node.js and a Gemini API key (plus, optionally, a
+DeepL key to compare a second engine on the same messages).
 
 ## What it does
 
 1. Reads a list of real messages (and, if you have it, Teams' native translation of each)
    from `messages.json`.
-2. Sends each message to the OpenAI API with a translation prompt tuned for a corporate
+2. Sends each message to the Gemini API with a translation prompt tuned for a corporate
    Chinese/English workplace (handles Mandarin, Cantonese, formal and casual register,
    mixed-language text).
-3. Writes a clean side-by-side comparison to `results.md` — original, Teams' translation,
-   and the LLM's translation — ready to show reviewers for a blind ranking.
+3. If `DEEPL_API_KEY` is set, also runs each message through DeepL: Chinese input gets
+   one English column; English input gets two columns — `ZH-HANT` (Traditional, standard
+   written Chinese) and `YUE` (Cantonese) — so the two registers can be compared directly.
+4. Writes a clean side-by-side comparison to `results.md` — original, Teams' translation,
+   and each engine's translation — ready to show reviewers for a blind ranking.
+
+Results are cached per message in `.translations-cache.json`, so re-runs only translate
+new or changed messages and don't re-spend API quota.
 
 ---
 
@@ -40,6 +47,16 @@ GEMINI_API_KEY=AIza...
 GEMINI_MODEL=gemini-2.5-flash
 CHINESE_SCRIPT=Traditional
 ```
+
+**Optional — add DeepL as a second engine.** Get a free-tier key at
+[deepl.com/pro-api](https://www.deepl.com/pro-api) (no credit card; free keys end in
+`:fx`) and add it to `.env`:
+```
+DEEPL_API_KEY=...:fx
+```
+Leave it blank to skip the DeepL columns entirely — the Gemini run is unaffected either
+way. You can also set `BATCH_SIZE` (default 4) to control how many messages go into
+each Gemini API call.
 
 > Note: Google's free-tier model lineup and rate limits shift fairly often. If
 > `gemini-2.5-flash` errors out or gets deprecated, check
@@ -90,7 +107,7 @@ Done. Report written to results.md
 ```
 
 Open `results.md` — it has each message with its original text, Teams' translation, and
-the LLM's translation stacked for easy comparison.
+each engine's translation stacked for easy comparison.
 
 ---
 
@@ -98,9 +115,9 @@ the LLM's translation stacked for easy comparison.
 
 **Blind review is the whole point.** Don't just eyeball it yourself and declare a winner
 — hand `results.md` (or reformat it) to the bilingual execs who flagged the problem,
-with the "Teams Native" and "LLM" labels hidden or randomized, and have them rank each
-pair without knowing which is which. That removes bias toward whichever they expect to
-be better.
+with the engine-name labels ("Teams Native", "Gemini", "DeepL") hidden or randomized,
+and have them rank each set without knowing which is which. That removes bias toward
+whichever they expect to be better.
 
 **What you're looking for:**
 - Does the LLM clearly win on the messages that were originally flagged as bad?
@@ -128,3 +145,5 @@ which should narrow the scope of what you actually build.
 | `Gemini API 429` | Free-tier rate limit hit — wait a bit and rerun, or reduce how many messages you test at once |
 | Gemini returned an empty response (finishReason: ...) | The message likely tripped a safety filter — check the flagged text isn't triggering that, or try rephrasing |
 | Script hangs on one message | Network issue — check your connection and retry |
+| `DeepL API 403` | `DEEPL_API_KEY` wrong, or a free (`:fx`) key being sent to the paid `api.deepl.com` host — this script uses `api-free.deepl.com`, which is correct for free keys |
+| Every engine fails with `fetch failed` (but works on another machine) | Corporate laptop with TLS-inspecting proxy (Zscaler/Netskope etc.): Node doesn't trust the corporate root CA that Windows does. Export that CA from `certmgr.msc` (Trusted Root → Base-64 .CER) and set `NODE_EXTRA_CA_CERTS=C:\path\to\ca.pem` before running, or on Node 22+ try `NODE_OPTIONS=--use-system-ca` |

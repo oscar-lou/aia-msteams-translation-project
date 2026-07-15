@@ -7,7 +7,7 @@ Simplified and Traditional, formal and colloquial, and mixed Chinese/English, in
 directions — and lets you enforce house terminology via a glossary. It's built this way
 because generic machine translation (including Teams' built-in feature) handles slang,
 idiom, and jargon poorly — confirmed against real flagged messages in a separate
-bake-off before this was built (see `translation-bakeoff/` if you have it).
+bake-off before this was built (see `translation-bakeoff/` in this repo).
 
 ## How it works
 
@@ -35,7 +35,11 @@ teams-translate/
 │  ├─ manifest.json      Declares the "Translate" message action
 │  ├─ color.png          192×192 icon
 │  └─ outline.png        32×32 transparent icon
-└─ .vscode/              Run/debug config (F5), tasks, settings
+├─ .vscode/              Run/debug config (F5), tasks, settings
+└─ translation-bakeoff/  Standalone engine-comparison script (Gemini vs DeepL vs
+                         Teams native) — the evidence step that preceded this bot.
+                         Has its own README, .env, and npm install; not part of
+                         the running Teams app.
 ```
 
 ---
