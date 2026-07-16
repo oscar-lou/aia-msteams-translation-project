@@ -4,3 +4,4 @@ translate-app.zip
 *.log
 .DS_Store
 .claude/
+*apiKey*.csv

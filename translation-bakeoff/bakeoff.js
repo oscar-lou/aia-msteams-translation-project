@@ -41,12 +41,15 @@ function parseBatchResponse(rawText, count) {
   return results;
 }
 
-async function translateBatch(msgs) {
-  if (!process.env.GEMINI_API_KEY) {
-    throw new Error("GEMINI_API_KEY is not set. Copy .env.example to .env and fill it in.");
-  }
-  const model = process.env.GEMINI_MODEL || "gemini-2.5-flash";
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`;
+// --- OpenAI-compatible batch engines (Qwen, DeepSeek, ...) --------------
+// Fully provider-agnostic: only base URL, key, and model name differ between
+// providers, so this one function serves all of them — no forking. Replaces
+// Gemini as the batching-capable engine (Gemini is geo-blocked in Hong Kong).
+// Reuses buildBatchSystemPrompt()/parseBatchResponse() as-is, and keeps
+// genuine multi-message batching since each provider's *_MODELS can list
+// several models, each requiring its own full pass over every message.
+async function translateBatchOpenAICompatible(msgs, baseUrl, apiKey, model) {
+  const url = `${baseUrl.replace(/\/+$/, "")}/chat/completions`;
 
   const userContent = msgs
     .map((m, i) => `[[[${i + 1}]]]\n${m.text}\n[[[/${i + 1}]]]`)
@@ -54,35 +57,35 @@ async function translateBatch(msgs) {
 
   const resp = await fetch(url, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+    },
     body: JSON.stringify({
-      systemInstruction: { parts: [{ text: buildBatchSystemPrompt() }] },
-      contents: [{ role: "user", parts: [{ text: userContent }] }],
-      generationConfig: { temperature: 0.2 },
+      model,
+      messages: [
+        { role: "system", content: buildBatchSystemPrompt() },
+        { role: "user", content: userContent },
+      ],
+      temperature: 0.2,
     }),
   });
   if (!resp.ok) {
-    throw new Error(`Gemini API ${resp.status}: ${await resp.text()}`);
+    throw new Error(`${model} API ${resp.status}: ${await resp.text()}`);
   }
   const data = await resp.json();
-  const candidate = data.candidates?.[0];
-  if (!candidate) {
-    throw new Error(`Gemini returned no candidate: ${JSON.stringify(data)}`);
+  const choice = data.choices?.[0];
+  if (!choice) {
+    throw new Error(`${model} returned no choices: ${JSON.stringify(data)}`);
   }
-  const parts = candidate.content?.parts;
-  if (!parts || !parts.length) {
-    throw new Error(
-      `Gemini returned an empty response (finishReason: ${candidate.finishReason || "unknown"})`
-    );
-  }
-  const rawText = parts.map((p) => p.text || "").join("");
+  const rawText = choice.message?.content || "";
   return parseBatchResponse(rawText, msgs.length);
 }
 
 // --- DeepL (optional second engine, for side-by-side comparison) -------
 const CJK_RE = /[一-鿿㐀-䶿]/;
 
-// DeepL has no per-message auto language-detection prompt like the Gemini path
+// DeepL has no per-message auto language-detection prompt like the batch engine
 // above, so direction is decided here from the input script instead.
 function isChineseText(text) {
   return CJK_RE.test(text);
@@ -111,9 +114,9 @@ async function translateWithDeepL(text, targetLang) {
   return translation.text;
 }
 
-// --- Azure OpenAI (optional third engine) -------------------------------
-// Reuses the exact same batch prompt/parser Gemini uses above, just run as a
-// "batch of one" — so translation instructions never fork between engines.
+// --- Azure OpenAI (optional engine) -------------------------------------
+// Reuses the exact same batch prompt/parser the engines above use, just run
+// as a "batch of one" — so translation instructions never fork per engine.
 function azureOpenAIErrorReason(status) {
   switch (status) {
     case 401:
@@ -182,6 +185,74 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+// Runs one OpenAI-compatible provider (Qwen, DeepSeek, ...) across all of its
+// configured models. Shared by every such provider so the batching/caching/
+// per-model error isolation logic isn't duplicated per provider.
+async function runOpenAICompatibleEnginePass({
+  rows,
+  cache,
+  cacheKey,
+  models,
+  baseUrl,
+  apiKey,
+  batchSize,
+  label,
+}) {
+  for (const model of models) {
+    const pendingForModel = [];
+    for (const row of rows) {
+      const cached = cache[row.id];
+      const cachedTranslation =
+        cached && cached.text === row.text && cached[cacheKey] && cached[cacheKey][model];
+      row[cacheKey] = row[cacheKey] || {};
+      if (cachedTranslation) {
+        row[cacheKey][model] = { translation: cachedTranslation, error: null };
+      } else {
+        pendingForModel.push(row);
+      }
+    }
+
+    const modelBatches = chunk(pendingForModel, batchSize);
+    console.log(
+      `\nRunning ${label} (${model}) on ${pendingForModel.length} message(s) in ` +
+        `${modelBatches.length} batch(es) of up to ${batchSize} ` +
+        `(${rows.length - pendingForModel.length} cached)...`
+    );
+    for (let b = 0; b < modelBatches.length; b++) {
+      const batch = modelBatches[b];
+      process.stdout.write(
+        `- Batch ${b + 1}/${modelBatches.length} (${batch.map((r) => r.id).join(", ")})... `
+      );
+      try {
+        const translations = await translateBatchOpenAICompatible(batch, baseUrl, apiKey, model);
+        console.log("done");
+        batch.forEach((row, i) => {
+          const t = translations[i];
+          if (t === null) {
+            row[cacheKey][model] = {
+              translation: null,
+              error: "Could not parse this message's translation out of the batch response.",
+            };
+          } else {
+            row[cacheKey][model] = { translation: t, error: null };
+            cache[row.id] = {
+              ...(cache[row.id] || {}),
+              text: row.text,
+              [cacheKey]: { ...((cache[row.id] || {})[cacheKey] || {}), [model]: t },
+            };
+          }
+        });
+      } catch (err) {
+        console.log("FAILED");
+        batch.forEach((row) => {
+          row[cacheKey][model] = { translation: null, error: String(err.message || err) };
+        });
+      }
+      if (b < modelBatches.length - 1) await sleep(2000);
+    }
+  }
+}
+
 async function main() {
   if (!fs.existsSync(MESSAGES_FILE)) {
     console.error(`Missing ${MESSAGES_FILE}. Create it first (see messages.json example).`);
@@ -199,69 +270,15 @@ async function main() {
     cache = JSON.parse(fs.readFileSync(CACHE_FILE, "utf8"));
   }
 
-  const cachedRows = [];
-  const pending = [];
-  for (const msg of messages) {
-    const cached = cache[msg.id];
-    if (cached && cached.text === msg.text && cached.llm_translation) {
-      cachedRows.push({ ...msg, llm_translation: cached.llm_translation, error: null });
-    } else {
-      pending.push(msg);
-    }
-  }
-  if (cachedRows.length) {
-    console.log(`Skipping ${cachedRows.length} already-translated message(s) (cached).`);
-  }
-
-  // BATCH_SIZE messages per API call, to conserve free-tier request quota.
-  // Free tier limits are mostly per-request, so batching N messages into 1 call
-  // uses 1/N of the requests compared to translating one at a time.
+  // BATCH_SIZE messages per API call, to conserve quota — shared by the Qwen
+  // pass below, since it's the one engine that still batches multiple
+  // messages per request (each QWEN_MODELS entry gets its own full pass).
   const batchSize = Math.max(1, parseInt(process.env.BATCH_SIZE || "4", 10));
-  const batches = chunk(pending, batchSize);
 
-  console.log(
-    `Running ${pending.length} message(s) in ${batches.length} batch(es) of up to ${batchSize}...\n`
-  );
+  const rows = messages.map((m) => ({ ...m }));
 
-  const rows = [];
-  for (let b = 0; b < batches.length; b++) {
-    const batch = batches[b];
-    process.stdout.write(`- Batch ${b + 1}/${batches.length} (${batch.map((m) => m.id).join(", ")})... `);
-    try {
-      const translations = await translateBatch(batch);
-      console.log("done");
-      batch.forEach((msg, i) => {
-        const t = translations[i];
-        if (t === null) {
-          rows.push({
-            ...msg,
-            llm_translation: null,
-            error: "Could not parse this message's translation out of the batch response.",
-          });
-        } else {
-          rows.push({ ...msg, llm_translation: t, error: null });
-          cache[msg.id] = { text: msg.text, llm_translation: t };
-        }
-      });
-    } catch (err) {
-      console.log("FAILED");
-      batch.forEach((msg) => {
-        rows.push({ ...msg, llm_translation: null, error: String(err.message || err) });
-      });
-    }
-    // Small pause between batches to stay comfortably under per-minute rate limits.
-    if (b < batches.length - 1) await sleep(2000);
-  }
-
-  fs.writeFileSync(CACHE_FILE, JSON.stringify(cache, null, 2), "utf8");
-
-  // Reassemble in original message order for the report.
-  const rowsById = new Map([...cachedRows, ...rows].map((r) => [r.id, r]));
-  rows.length = 0;
-  rows.push(...messages.map((m) => rowsById.get(m.id)));
-
-  // --- DeepL pass (optional second engine) --------------------------------
-  // Skipped entirely, with existing Gemini results untouched, if no key is set.
+  // --- DeepL pass (optional engine) ----------------------------------------
+  // Skipped entirely, with existing translation results untouched, if no key is set.
   // Chinese -> English input only needs one DeepL target (EN-US). English ->
   // Chinese input is tested against BOTH ZH-HANT (Traditional, standard written
   // Chinese) and YUE (Cantonese) so the two registers can be compared directly.
@@ -315,10 +332,10 @@ async function main() {
     console.log("\nDEEPL_API_KEY not set — skipping the DeepL column.");
   }
 
-  // --- Azure OpenAI pass (optional third engine) --------------------------
-  // Skipped entirely, with existing Gemini/DeepL results untouched, if the
+  // --- Azure OpenAI pass (optional engine) ---------------------------------
+  // Skipped entirely, with existing Qwen/DeepL results untouched, if the
   // resource isn't fully configured. Uses the same buildBatchSystemPrompt()
-  // instructions as Gemini, so it's a fair like-for-like comparison.
+  // instructions as the Qwen engine, so it's a fair like-for-like comparison.
   const azureEnabled = !!(
     process.env.AZURE_OPENAI_ENDPOINT &&
     process.env.AZURE_OPENAI_API_KEY &&
@@ -353,22 +370,100 @@ async function main() {
     );
   }
 
+  // --- Qwen pass (via Alibaba Cloud Model Studio) --------------------------
+  // Skipped entirely, with existing DeepL/Azure OpenAI results untouched, if
+  // not fully configured. QWEN_MODELS is comma-separated; each model gets its
+  // own full batched pass and its own column, cached independently so a
+  // failure on one model doesn't affect another's cached results.
+  const qwenModels = (process.env.QWEN_MODELS || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const qwenEnabled = !!(
+    process.env.QWEN_API_KEY &&
+    process.env.QWEN_BASE_URL &&
+    qwenModels.length
+  );
+  if (qwenEnabled) {
+    await runOpenAICompatibleEnginePass({
+      rows,
+      cache,
+      cacheKey: "qwen",
+      models: qwenModels,
+      baseUrl: process.env.QWEN_BASE_URL,
+      apiKey: process.env.QWEN_API_KEY,
+      batchSize,
+      label: "Qwen",
+    });
+    fs.writeFileSync(CACHE_FILE, JSON.stringify(cache, null, 2), "utf8");
+  } else {
+    console.log(
+      "\nQWEN_API_KEY/QWEN_BASE_URL/QWEN_MODELS not fully set — skipping Qwen columns."
+    );
+  }
+
+  // --- DeepSeek pass --------------------------------------------------------
+  // Skipped entirely, with existing DeepL/Azure OpenAI/Qwen results untouched,
+  // if not fully configured. Same shape as the Qwen pass above (comma-separated
+  // *_MODELS, one column per model) since both share translateBatchOpenAICompatible.
+  const deepseekModels = (process.env.DEEPSEEK_MODELS || "deepseek-v4-flash")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const deepseekEnabled = !!(
+    process.env.DEEPSEEK_API_KEY &&
+    process.env.DEEPSEEK_BASE_URL &&
+    deepseekModels.length
+  );
+  if (deepseekEnabled) {
+    await runOpenAICompatibleEnginePass({
+      rows,
+      cache,
+      cacheKey: "deepseek",
+      models: deepseekModels,
+      baseUrl: process.env.DEEPSEEK_BASE_URL,
+      apiKey: process.env.DEEPSEEK_API_KEY,
+      batchSize,
+      label: "DeepSeek",
+    });
+    fs.writeFileSync(CACHE_FILE, JSON.stringify(cache, null, 2), "utf8");
+  } else {
+    console.log(
+      "\nDEEPSEEK_API_KEY/DEEPSEEK_BASE_URL/DEEPSEEK_MODELS not fully set — skipping DeepSeek columns."
+    );
+  }
+
   // --- Write a clean side-by-side Markdown report ------------------------
   let md = `# Translation Bake-off Results\n\n`;
   md += `Generated ${new Date().toISOString()}\n\n`;
-  md += `Blind-review tip: cover the engine-name headers ("Teams Native", "Gemini",\n`;
-  md += `"DeepL", "Azure OpenAI") when showing this to reviewers, so the ranking\n`;
-  md += `isn't biased by knowing which engine is which.\n\n`;
+  md += `Blind-review tip: cover the engine-name headers ("Teams Native", "Qwen",\n`;
+  md += `"DeepSeek", "DeepL", "Azure OpenAI") when showing this to reviewers, so the\n`;
+  md += `ranking isn't biased by knowing which engine is which.\n\n`;
 
   for (const row of rows) {
     md += `---\n\n`;
     md += row.category ? `### ${row.id} — ${row.category}\n\n` : `### ${row.id}\n\n`;
     md += `**Original:**\n> ${row.text}\n\n`;
     md += `**Teams Native:**\n> ${row.teams_native_translation || "_(not filled in — paste Teams' translation into messages.json)_"}\n\n`;
-    if (row.error) {
-      md += `**Gemini:** _Error: ${row.error}_\n\n`;
-    } else {
-      md += `**Gemini:**\n> ${row.llm_translation}\n\n`;
+    if (qwenEnabled) {
+      for (const model of qwenModels) {
+        const result = row.qwen && row.qwen[model];
+        if (result && result.error) {
+          md += `**Qwen (${model}):** _Error: ${result.error}_\n\n`;
+        } else if (result) {
+          md += `**Qwen (${model}):**\n> ${result.translation}\n\n`;
+        }
+      }
+    }
+    if (deepseekEnabled) {
+      for (const model of deepseekModels) {
+        const result = row.deepseek && row.deepseek[model];
+        if (result && result.error) {
+          md += `**DeepSeek (${model}):** _Error: ${result.error}_\n\n`;
+        } else if (result) {
+          md += `**DeepSeek (${model}):**\n> ${result.translation}\n\n`;
+        }
+      }
     }
     if (deeplEnabled) {
       if (isChineseText(row.text)) {
