@@ -1,93 +1,59 @@
 const { TeamsActivityHandler, CardFactory } = require("botbuilder");
 
-// --- Optional terminology glossary -----------------------------------------
-// glossary.json is a list of { source, target, note } entries. It teaches the
-// translator your house terms and slang so it doesn't guess. Safe to leave empty.
-let GLOSSARY = [];
-try {
-  GLOSSARY = require("./glossary.json");
-} catch {
-  GLOSSARY = [];
+// --- Translation engine (DeepL) ---------------------------------------------
+// One swappable function. Uses DeepL (validated against Gemini/Qwen/DeepSeek in
+// the bake-off). To swap engines later, replace the body of translateText() —
+// nothing else in the app needs to change.
+//
+// Note: glossary.json's "preferred term equivalences" mechanism was a prompt
+// injected into an LLM call and has no equivalent here — DeepL has its own
+// separate Glossary API (create a glossary via POST /v2/glossaries, then pass
+// glossary_id on /v2/translate) that isn't wired up yet. House terms in
+// glossary.json are NOT currently applied while DeepL is the active engine.
+
+const CJK_RE = /[一-鿿㐀-䶿]/;
+function isChineseText(text) {
+  return CJK_RE.test(text);
 }
 
-// --- Translation engine (LLM) ----------------------------------------------
-// One swappable function. Uses Google's Gemini API (validated in the bake-off).
-// To swap engines later, replace the body of translateText() — nothing else in
-// the app needs to change.
-
-async function callGemini(systemPrompt, userText) {
-  if (!process.env.GEMINI_API_KEY) {
-    throw new Error("GEMINI_API_KEY is not set");
+// Direction is decided here from the input script, since DeepL (unlike an
+// LLM) has no prompt to describe bidirectional auto-detection to.
+function deeplTargetLangFor(text) {
+  const forceTarget = (process.env.FORCE_TARGET_LANG || "").trim();
+  if (forceTarget) {
+    // Pinned mode: must now be a valid DeepL target_lang code (e.g. "EN-US",
+    // "ZH-HANT") rather than a freeform language name — DeepL requires an
+    // exact code, unlike the previous Gemini prompt which accepted any name.
+    return forceTarget;
   }
-  const model = process.env.GEMINI_MODEL || "gemini-2.5-flash";
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`;
+  if (isChineseText(text)) return "EN-US";
+  const script = (process.env.CHINESE_SCRIPT || "Traditional").trim().toLowerCase();
+  return script === "simplified" ? "ZH-HANS" : "ZH-HANT";
+}
 
-  const resp = await fetch(url, {
+async function callDeepL(text, targetLang) {
+  if (!process.env.DEEPL_API_KEY) {
+    throw new Error("DEEPL_API_KEY is not set");
+  }
+  const resp = await fetch("https://api-free.deepl.com/v2/translate", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      systemInstruction: { parts: [{ text: systemPrompt }] },
-      contents: [{ role: "user", parts: [{ text: userText }] }],
-      generationConfig: { temperature: 0.2 },
-    }),
+    headers: {
+      Authorization: `DeepL-Auth-Key ${process.env.DEEPL_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ text: [text], target_lang: targetLang }),
   });
-  if (!resp.ok) throw new Error(`Gemini API ${resp.status}: ${await resp.text()}`);
+  if (!resp.ok) throw new Error(`DeepL API ${resp.status}: ${await resp.text()}`);
 
   const data = await resp.json();
-  const candidate = data.candidates?.[0];
-  if (!candidate) throw new Error(`Gemini returned no candidate: ${JSON.stringify(data)}`);
-  const parts = candidate.content?.parts;
-  if (!parts || !parts.length) {
-    throw new Error(
-      `Gemini returned an empty response (finishReason: ${candidate.finishReason || "unknown"})`
-    );
-  }
-  return parts.map((p) => p.text || "").join("").trim();
-}
-
-function buildSystemPrompt(glossary) {
-  const script = (process.env.CHINESE_SCRIPT || "Traditional").trim();
-  const forceTarget = (process.env.FORCE_TARGET_LANG || "").trim();
-
-  let p;
-  if (forceTarget) {
-    // Pinned mode: always translate into one language (e.g. always English).
-    p =
-      `You are a professional translator for a corporate Microsoft Teams workspace. ` +
-      `Translate the user's message into ${forceTarget}, whatever language it is written in. `;
-  } else {
-    // Default: auto bidirectional Chinese <-> English.
-    p =
-      `You are a professional translator for a corporate Microsoft Teams workspace ` +
-      `where colleagues write in both Chinese and English. ` +
-      `Detect the language of the message. If it is in any form of Chinese — Mandarin or ` +
-      `Cantonese, Simplified or Traditional, formal or colloquial, including messages that ` +
-      `mix Chinese and English — translate it into natural, professional English. ` +
-      `If it is in English, translate it into Standard Written Chinese using ${script} characters. `;
-  }
-
-  p +=
-    `Preserve the original tone and register: keep formal messages formal and casual ` +
-    `messages casual, but always produce clear, workplace-appropriate output. ` +
-    `Translate slang, abbreviations, and idioms by their intended meaning — never word-for-word. ` +
-    `Preserve names, @mentions, numbers, URLs, and product names exactly. ` +
-    `If the message is already in the target language, return it unchanged. ` +
-    `Output ONLY the translation, with no quotes, labels, or explanation.`;
-
-  if (glossary && glossary.length) {
-    p += `\n\nUse these preferred term equivalences in either direction:\n`;
-    for (const g of glossary) {
-      p += `- "${g.source}" = "${g.target}"`;
-      if (g.note) p += ` (${g.note})`;
-      p += `\n`;
-    }
-  }
-  return p;
+  const translation = data.translations?.[0];
+  if (!translation) throw new Error(`DeepL returned no translation: ${JSON.stringify(data)}`);
+  return translation.text;
 }
 
 async function translateText(text) {
-  const systemPrompt = buildSystemPrompt(GLOSSARY);
-  const translated = await callGemini(systemPrompt, text);
+  const targetLang = deeplTargetLangFor(text);
+  const translated = await callDeepL(text, targetLang);
   return { text: translated };
 }
 
