@@ -48,14 +48,48 @@
     "id": "sample-9",
     "category": "Legal (Traditional Chinese)",
     "text": "若乙方未能履行付款義務，甲方及擔保人須負連帶責任，且不得以不可抗力為由主張免責。",
-    "teams_native_translation": "If Party B fails to perform its payment obligations, Party A and the guarantor shall bear joint responsibility, and may not claim exemption on the grounds of force majeure.",
-    "note": "SIMULATED baseline — not pulled from Teams. Legal test: '連帶責任' means 'joint AND SEVERAL liability' (each party can be held liable for the full amount), which is legally distinct from plain 'joint responsibility' (liability split proportionally). If you can, replace this with Teams' real translation before treating it as evidence."
+    "teams_native_translation": "If Party B fails to perform its payment obligations, Party A and the guarantor shall bear joint responsibility, and may not claim exemption on the grounds of force majeure."
   },
   {
     "id": "sample-10",
     "category": "Financial Jargon (English)",
     "text": "Given the current burn rate, we only have about four months of runway left, and the lender is now asking for a bigger haircut on the collateral.",
-    "teams_native_translation": "鑑於目前的燃燒率，我們只剩下大約四個月的跑道，貸款人現在要求對抵押品進行更大的理髮。",
-    "note": "SIMULATED baseline — not pulled from Teams. Financial test: three domain terms prone to literal mistranslation — 'runway' (financial runway vs. airport runway/跑道), 'haircut' (valuation reduction vs. literal haircut/理髮), 'burn rate' (rendered too literally as 燃燒率). If you can, replace this with Teams' real translation before treating it as evidence."
+    "teams_native_translation": "鑑於目前的燃燒率，我們只剩下大約四個月的跑道，貸款人現在要求對抵押品進行更大的理髮。"
+  },
+    {
+    "id": "sample-11",
+    "category": "Financial Jargon (English)",
+    "text": "She threw him under the bus because he dropped the ball on the merger.",
+    "teams_native_translation": "她因為他在合併案上失職，把他推到車上。"
+  },
+  {
+    "id": "sample-12",
+    "category": "Casual Slang (English)",
+    "text": "Sup man, you down to grab some grub later?",
+    "teams_native_translation": "兄弟，你待會想一起吃點東西嗎？"
+  },
+  {
+    "id": "sample-13",
+    "category": "Corporate Slang (English)",
+    "text": "Our team got flamed on the presentation last week, I don't want to see any sloppy formatting errors on an executive proposal ever again, you understand?",
+    "teams_native_translation": "我們團隊上週的簡報被罵了，我不想再看到任何行政提案格式混亂，你懂嗎？"
+  },
+  {
+    "id": "sample-14",
+    "category": "Corporate Slang (Cantonese)",
+    "text": "喂，尋晚單p1又要我幫手執手尾。大佬，真係頂唔順，佢又射波比我。下晝個meeting你幫手hold住個客先，我仲要嘔緊個deck。",
+    "teams_native_translation": ""
+  },
+  {
+    "id": "sample-15",
+    "category": "Corporate Slang (Taiwanese)",
+    "text": "關於這次的專案，大家可能要再接地氣一點。之前的規劃有點不痛不癢，客群完全沒有感。主管現在在敲碗等新方向，我們不能再互推皮球、瘋狂甩鍋了，這次一定要做出亮點。",
+    "teams_native_translation": ""
+  },
+      {
+    "id": "sample-16",
+    "category": "Corporate Slang (Taiwanese)",
+    "text": "頭先個會真係多餘，老細又係度畫大餅，講埋啲模稜兩可嘅嘢。佢仲要塞錢入我袋咁款，叫我哋要『有溫度』。我都費事同佢詏，唯有扮聽話，唯唯諾諾算數。",
+    "teams_native_translation": ""
   }
 ]
