@@ -270,16 +270,22 @@ async function translateBatchGemini(msgs, apiKey, model, singleMessage = false) 
 // hardcoded single-deployment integration like translateWithAzureOpenAI below,
 // which targets exactly one fixed AZURE_OPENAI_DEPLOYMENT and is left untouched.
 //
-// Foundry/Azure OpenAI's request shape addresses the model via the URL path
-// (/openai/deployments/{name}/...) with an "api-key" header, not OpenAI's
-// single-URL + "Authorization: Bearer" + model-in-body shape — so, same
-// reasoning as Gemini's separate function, this can't reuse
-// translateBatchOpenAICompatible as-is. It still shares
-// buildBatchSystemPrompt()/buildBatchUserContent()/parseBatchResponse(), and
-// honours singleMessage identically to Gemini: raw text in/out, no [[[n]]]
-// wrapping, when true.
+// URL/body corrected 2026-07 after a real 400 "API version not supported" on
+// every model: Azure's data-plane inference API moved off the old dated
+// api-version scheme (2024-10-21 etc.) to a new "v1" API with NO per-deployment
+// URL segment — confirmed against learn.microsoft.com's current chat-completions
+// reference (POST {endpoint}/openai/v1/chat/completions, api-version is one of
+// "v1"/"preview", model goes in the JSON body). That's why every model failed
+// identically regardless of vendor — it was never a per-model issue.
+//
+// Keeps its own function (not a reuse of translateBatchOpenAICompatible)
+// specifically to control the api-version query param and use the "api-key"
+// header explicitly, though the v1 API also documents accepting
+// "Authorization: Bearer". Shares buildBatchSystemPrompt()/
+// buildBatchUserContent()/parseBatchResponse(), and honours singleMessage
+// identically to Gemini: raw text in/out, no [[[n]]] wrapping, when true.
 async function translateBatchAzureFoundry(msgs, endpoint, apiKey, deployment, apiVersion, singleMessage = false) {
-  const url = `${endpoint.replace(/\/+$/, "")}/openai/deployments/${deployment}/chat/completions?api-version=${apiVersion}`;
+  const url = `${endpoint.replace(/\/+$/, "")}/openai/v1/chat/completions?api-version=${apiVersion}`;
 
   const userContent = singleMessage ? msgs[0].text : buildBatchUserContent(msgs);
   const startedAt = Date.now();
@@ -291,6 +297,7 @@ async function translateBatchAzureFoundry(msgs, endpoint, apiKey, deployment, ap
       "api-key": apiKey,
     },
     body: JSON.stringify({
+      model: deployment,
       messages: [
         { role: "system", content: buildBatchSystemPrompt(singleMessage) },
         { role: "user", content: userContent },
@@ -799,7 +806,7 @@ async function main() {
           process.env.FOUNDRY_ENDPOINT,
           process.env.FOUNDRY_API_KEY,
           model,
-          process.env.FOUNDRY_API_VERSION || "2024-10-21",
+          process.env.FOUNDRY_API_VERSION || "v1",
           SINGLE_MESSAGE_MODE
         ),
     });

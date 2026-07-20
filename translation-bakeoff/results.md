@@ -1,6 +1,6 @@
 # Translation Bake-off Results
 
-Generated 2026-07-20T04:17:46.984Z
+Generated 2026-07-20T07:56:57.842Z
 
 **Run mode:** `SINGLE_MESSAGE_MODE=false` — multi-message batching enabled (`BATCH_SIZE=4`) for Gemini/Qwen/DeepSeek. See the cost warning in the Token &amp; Cost Summary below before quoting any per-message figure.
 
@@ -8,6 +8,24 @@ Blind-review tip: cover the engine-name headers ("Teams Native", "Gemini",
 "DeepL", "Azure OpenAI", "Foundry (model)") when showing this to reviewers,
 so the ranking isn't biased by knowing which engine is which. (Qwen/DeepSeek
 columns are currently disabled — see comments in bakeoff.js.)
+
+## Foundry Model Screening Summary
+
+Deployment names are whatever you named them in your Foundry resource's Deployments tab — a "failed" row below is often just a naming mismatch, not a real capability problem. Full per-message output for each model is further down, under its own `**Foundry (model):**` heading.
+
+| Model | Status | OK | Failed | Mean latency ms | Total tokens |
+|---|---|---|---|---|---|
+| gpt-5-mini | ❌ | 0 | 16 | — | — |
+| gpt-5-nano | ❌ | 0 | 16 | — | — |
+| gpt-5-chat | ❌ | 0 | 16 | — | — |
+| gpt-5.1 | ❌ | 0 | 16 | — | — |
+| gpt-4.1 | ❌ | 0 | 16 | — | — |
+| gpt-4.1-nano | ❌ | 0 | 16 | — | — |
+| DeepSeek-V4-Flash | ❌ | 0 | 16 | — | — |
+| DeepSeek-V4-Pro | ❌ | 0 | 16 | — | — |
+| Kimi-K2.6 | ❌ | 0 | 16 | — | — |
+| Kimi-K2.5 | ❌ | 0 | 16 | — | — |
+| o3 | ❌ | 0 | 16 | — | — |
 
 ---
 
@@ -21,6 +39,28 @@ columns are currently disabled — see comments in bakeoff.js.)
 
 **Gemini (gemini-3.5-flash):**
 > A die-hard fan of 3-dish rice.
+
+**Foundry (gpt-5-mini):** _Error: Foundry (gpt-5-mini) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5-nano):** _Error: Foundry (gpt-5-nano) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5-chat):** _Error: Foundry (gpt-5-chat) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5.1):** _Error: Foundry (gpt-5.1) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-4.1):** _Error: Foundry (gpt-4.1) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-4.1-nano):** _Error: Foundry (gpt-4.1-nano) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (DeepSeek-V4-Flash):** _Error: Foundry (DeepSeek-V4-Flash) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (DeepSeek-V4-Pro):** _Error: Foundry (DeepSeek-V4-Pro) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (Kimi-K2.6):** _Error: Foundry (Kimi-K2.6) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (Kimi-K2.5):** _Error: Foundry (Kimi-K2.5) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (o3):** _Error: Foundry (o3) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
 
 **DeepL:**
 > Three Meals for the Die-Hard Fans
@@ -38,6 +78,28 @@ columns are currently disabled — see comments in bakeoff.js.)
 **Gemini (gemini-3.5-flash):**
 > Could you please reply with the quote as soon as possible? The client needs to make a decision today.
 
+**Foundry (gpt-5-mini):** _Error: Foundry (gpt-5-mini) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5-nano):** _Error: Foundry (gpt-5-nano) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5-chat):** _Error: Foundry (gpt-5-chat) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5.1):** _Error: Foundry (gpt-5.1) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-4.1):** _Error: Foundry (gpt-4.1) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-4.1-nano):** _Error: Foundry (gpt-4.1-nano) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (DeepSeek-V4-Flash):** _Error: Foundry (DeepSeek-V4-Flash) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (DeepSeek-V4-Pro):** _Error: Foundry (DeepSeek-V4-Pro) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (Kimi-K2.6):** _Error: Foundry (Kimi-K2.6) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (Kimi-K2.5):** _Error: Foundry (Kimi-K2.5) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (o3):** _Error: Foundry (o3) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
 **DeepL:**
 > Please get back to us with a quote as soon as possible; the client needs to make a decision today.
 
@@ -53,6 +115,28 @@ columns are currently disabled — see comments in bakeoff.js.)
 
 **Gemini (gemini-3.5-flash):**
 > 請於今日下班前確認已收到簽署的保密協議。
+
+**Foundry (gpt-5-mini):** _Error: Foundry (gpt-5-mini) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5-nano):** _Error: Foundry (gpt-5-nano) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5-chat):** _Error: Foundry (gpt-5-chat) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5.1):** _Error: Foundry (gpt-5.1) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-4.1):** _Error: Foundry (gpt-4.1) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-4.1-nano):** _Error: Foundry (gpt-4.1-nano) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (DeepSeek-V4-Flash):** _Error: Foundry (DeepSeek-V4-Flash) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (DeepSeek-V4-Pro):** _Error: Foundry (DeepSeek-V4-Pro) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (Kimi-K2.6):** _Error: Foundry (Kimi-K2.6) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (Kimi-K2.5):** _Error: Foundry (Kimi-K2.5) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (o3):** _Error: Foundry (o3) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
 
 **DeepL (Traditional Chinese):**
 > 請於今日收市前確認已收到經簽署的保密協議。
@@ -73,6 +157,28 @@ columns are currently disabled — see comments in bakeoff.js.)
 **Gemini (gemini-3.5-flash):**
 > 老實說，我目前真的沒有心力私底下討論這件事。我們可以先把它擱置到第三季嗎？
 
+**Foundry (gpt-5-mini):** _Error: Foundry (gpt-5-mini) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5-nano):** _Error: Foundry (gpt-5-nano) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5-chat):** _Error: Foundry (gpt-5-chat) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5.1):** _Error: Foundry (gpt-5.1) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-4.1):** _Error: Foundry (gpt-4.1) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-4.1-nano):** _Error: Foundry (gpt-4.1-nano) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (DeepSeek-V4-Flash):** _Error: Foundry (DeepSeek-V4-Flash) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (DeepSeek-V4-Pro):** _Error: Foundry (DeepSeek-V4-Pro) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (Kimi-K2.6):** _Error: Foundry (Kimi-K2.6) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (Kimi-K2.5):** _Error: Foundry (Kimi-K2.5) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (o3):** _Error: Foundry (o3) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
 **DeepL (Traditional Chinese):**
 > 老實說，我現在實在沒空把這件事移到私下討論。我們能不能先擱置一下，等到第三季再說？
 
@@ -91,6 +197,28 @@ columns are currently disabled — see comments in bakeoff.js.)
 
 **Gemini (gemini-3.5-flash):**
 > 在我們最終確定供應商之前，先對這兩個平台進行一次快速的對比測試吧。另外，我們也需要確保在 staging 環境中內部試用我們自己的 API。
+
+**Foundry (gpt-5-mini):** _Error: Foundry (gpt-5-mini) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5-nano):** _Error: Foundry (gpt-5-nano) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5-chat):** _Error: Foundry (gpt-5-chat) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5.1):** _Error: Foundry (gpt-5.1) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-4.1):** _Error: Foundry (gpt-4.1) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-4.1-nano):** _Error: Foundry (gpt-4.1-nano) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (DeepSeek-V4-Flash):** _Error: Foundry (DeepSeek-V4-Flash) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (DeepSeek-V4-Pro):** _Error: Foundry (DeepSeek-V4-Pro) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (Kimi-K2.6):** _Error: Foundry (Kimi-K2.6) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (Kimi-K2.5):** _Error: Foundry (Kimi-K2.5) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (o3):** _Error: Foundry (o3) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
 
 **DeepL (Traditional Chinese):**
 > 在確定供應商之前，讓我們先對這兩套平台進行一次快速比對測試。此外，我們還需確保在預生產環境中實際使用我們自己的 API。
@@ -111,6 +239,28 @@ columns are currently disabled — see comments in bakeoff.js.)
 **Gemini (gemini-3.5-flash):**
 > 正如我上一封郵件所述，希望我們今後能避免各自為政。所有面對客戶的溝通，還請務必讓我知悉。
 
+**Foundry (gpt-5-mini):** _Error: Foundry (gpt-5-mini) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5-nano):** _Error: Foundry (gpt-5-nano) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5-chat):** _Error: Foundry (gpt-5-chat) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5.1):** _Error: Foundry (gpt-5.1) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-4.1):** _Error: Foundry (gpt-4.1) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-4.1-nano):** _Error: Foundry (gpt-4.1-nano) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (DeepSeek-V4-Flash):** _Error: Foundry (DeepSeek-V4-Flash) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (DeepSeek-V4-Pro):** _Error: Foundry (DeepSeek-V4-Pro) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (Kimi-K2.6):** _Error: Foundry (Kimi-K2.6) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (Kimi-K2.5):** _Error: Foundry (Kimi-K2.5) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (o3):** _Error: Foundry (o3) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
 **DeepL (Traditional Chinese):**
 > 如我上一封電子郵件所述，今後若能避免各自為政，我將不勝感激。請將所有與客戶相關的溝通內容都抄送給我。
 
@@ -130,6 +280,28 @@ columns are currently disabled — see comments in bakeoff.js.)
 **Gemini (gemini-3.5-flash):**
 > Everyone is burning themselves out on this project, and the manager does nothing but make empty promises. If things go south, it's us junior staff who will end up taking the fall.
 
+**Foundry (gpt-5-mini):** _Error: Foundry (gpt-5-mini) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5-nano):** _Error: Foundry (gpt-5-nano) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5-chat):** _Error: Foundry (gpt-5-chat) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5.1):** _Error: Foundry (gpt-5.1) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-4.1):** _Error: Foundry (gpt-4.1) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-4.1-nano):** _Error: Foundry (gpt-4.1-nano) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (DeepSeek-V4-Flash):** _Error: Foundry (DeepSeek-V4-Flash) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (DeepSeek-V4-Pro):** _Error: Foundry (DeepSeek-V4-Pro) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (Kimi-K2.6):** _Error: Foundry (Kimi-K2.6) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (Kimi-K2.5):** _Error: Foundry (Kimi-K2.5) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (o3):** _Error: Foundry (o3) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
 **DeepL:**
 > Everyone on this project is caught up in the rat race, and our manager spends all day making empty promises—but when things go wrong, it’s still us on the front lines who end up taking the fall.
 
@@ -145,6 +317,28 @@ columns are currently disabled — see comments in bakeoff.js.)
 
 **Gemini (gemini-3.5-flash):**
 > The client seems to have some complaints. We'd better be proactive so we don't get caught off guard.
+
+**Foundry (gpt-5-mini):** _Error: Foundry (gpt-5-mini) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5-nano):** _Error: Foundry (gpt-5-nano) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5-chat):** _Error: Foundry (gpt-5-chat) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5.1):** _Error: Foundry (gpt-5.1) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-4.1):** _Error: Foundry (gpt-4.1) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-4.1-nano):** _Error: Foundry (gpt-4.1-nano) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (DeepSeek-V4-Flash):** _Error: Foundry (DeepSeek-V4-Flash) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (DeepSeek-V4-Pro):** _Error: Foundry (DeepSeek-V4-Pro) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (Kimi-K2.6):** _Error: Foundry (Kimi-K2.6) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (Kimi-K2.5):** _Error: Foundry (Kimi-K2.5) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (o3):** _Error: Foundry (o3) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
 
 **DeepL:**
 > The client seems to have some reservations, so we’d better take proactive measures to avoid being caught off guard later.
@@ -162,6 +356,28 @@ columns are currently disabled — see comments in bakeoff.js.)
 **Gemini (gemini-3.5-flash):**
 > If Party B fails to fulfill its payment obligations, Party A and the guarantor shall bear joint and several liability, and shall not claim exemption from liability on the grounds of force majeure.
 
+**Foundry (gpt-5-mini):** _Error: Foundry (gpt-5-mini) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5-nano):** _Error: Foundry (gpt-5-nano) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5-chat):** _Error: Foundry (gpt-5-chat) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5.1):** _Error: Foundry (gpt-5.1) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-4.1):** _Error: Foundry (gpt-4.1) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-4.1-nano):** _Error: Foundry (gpt-4.1-nano) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (DeepSeek-V4-Flash):** _Error: Foundry (DeepSeek-V4-Flash) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (DeepSeek-V4-Pro):** _Error: Foundry (DeepSeek-V4-Pro) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (Kimi-K2.6):** _Error: Foundry (Kimi-K2.6) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (Kimi-K2.5):** _Error: Foundry (Kimi-K2.5) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (o3):** _Error: Foundry (o3) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
 **DeepL:**
 > If Party B fails to fulfill its payment obligations, Party A and the guarantor shall be jointly and severally liable and may not claim exemption from liability on the grounds of force majeure.
 
@@ -177,6 +393,28 @@ columns are currently disabled — see comments in bakeoff.js.)
 
 **Gemini (gemini-3.5-flash):**
 > 以目前的資金消耗率來看，我們的資金大約只能再撐四個月，而且貸款機構現在要求對抵押品進行更大的折價。
+
+**Foundry (gpt-5-mini):** _Error: Foundry (gpt-5-mini) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5-nano):** _Error: Foundry (gpt-5-nano) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5-chat):** _Error: Foundry (gpt-5-chat) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5.1):** _Error: Foundry (gpt-5.1) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-4.1):** _Error: Foundry (gpt-4.1) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-4.1-nano):** _Error: Foundry (gpt-4.1-nano) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (DeepSeek-V4-Flash):** _Error: Foundry (DeepSeek-V4-Flash) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (DeepSeek-V4-Pro):** _Error: Foundry (DeepSeek-V4-Pro) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (Kimi-K2.6):** _Error: Foundry (Kimi-K2.6) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (Kimi-K2.5):** _Error: Foundry (Kimi-K2.5) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (o3):** _Error: Foundry (o3) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
 
 **DeepL (Traditional Chinese):**
 > 以目前的資金消耗速度來看，我們只剩下大約四個月的營運資金，而貸款方現在要求對抵押品進行更大的減值。
@@ -197,6 +435,28 @@ columns are currently disabled — see comments in bakeoff.js.)
 **Gemini (gemini-3.5-flash):**
 > 她把責任推到他身上，因為他搞砸了這次的合併案。
 
+**Foundry (gpt-5-mini):** _Error: Foundry (gpt-5-mini) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5-nano):** _Error: Foundry (gpt-5-nano) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5-chat):** _Error: Foundry (gpt-5-chat) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5.1):** _Error: Foundry (gpt-5.1) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-4.1):** _Error: Foundry (gpt-4.1) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-4.1-nano):** _Error: Foundry (gpt-4.1-nano) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (DeepSeek-V4-Flash):** _Error: Foundry (DeepSeek-V4-Flash) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (DeepSeek-V4-Pro):** _Error: Foundry (DeepSeek-V4-Pro) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (Kimi-K2.6):** _Error: Foundry (Kimi-K2.6) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (Kimi-K2.5):** _Error: Foundry (Kimi-K2.5) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (o3):** _Error: Foundry (o3) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
 **DeepL (Traditional Chinese):**
 > 她把他當替罪羊，因為他在這樁合併案中搞砸了。
 
@@ -215,6 +475,28 @@ columns are currently disabled — see comments in bakeoff.js.)
 
 **Gemini (gemini-3.5-flash):**
 > 嗨老兄，等一下要不要一起去吃點東西？
+
+**Foundry (gpt-5-mini):** _Error: Foundry (gpt-5-mini) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5-nano):** _Error: Foundry (gpt-5-nano) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5-chat):** _Error: Foundry (gpt-5-chat) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5.1):** _Error: Foundry (gpt-5.1) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-4.1):** _Error: Foundry (gpt-4.1) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-4.1-nano):** _Error: Foundry (gpt-4.1-nano) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (DeepSeek-V4-Flash):** _Error: Foundry (DeepSeek-V4-Flash) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (DeepSeek-V4-Pro):** _Error: Foundry (DeepSeek-V4-Pro) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (Kimi-K2.6):** _Error: Foundry (Kimi-K2.6) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (Kimi-K2.5):** _Error: Foundry (Kimi-K2.5) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (o3):** _Error: Foundry (o3) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
 
 **DeepL (Traditional Chinese):**
 > 嗨老兄，待會兒要一起吃點東西嗎？
@@ -235,6 +517,28 @@ columns are currently disabled — see comments in bakeoff.js.)
 **Gemini (gemini-3.5-flash):**
 > 我們團隊上週的簡報被痛批了一頓。我不希望以後在給高層的提案中再看到任何粗心的排版錯誤，明白了嗎？
 
+**Foundry (gpt-5-mini):** _Error: Foundry (gpt-5-mini) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5-nano):** _Error: Foundry (gpt-5-nano) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5-chat):** _Error: Foundry (gpt-5-chat) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5.1):** _Error: Foundry (gpt-5.1) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-4.1):** _Error: Foundry (gpt-4.1) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-4.1-nano):** _Error: Foundry (gpt-4.1-nano) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (DeepSeek-V4-Flash):** _Error: Foundry (DeepSeek-V4-Flash) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (DeepSeek-V4-Pro):** _Error: Foundry (DeepSeek-V4-Pro) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (Kimi-K2.6):** _Error: Foundry (Kimi-K2.6) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (Kimi-K2.5):** _Error: Foundry (Kimi-K2.5) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (o3):** _Error: Foundry (o3) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
 **DeepL (Traditional Chinese):**
 > 上週我們的團隊在簡報中遭到猛烈抨擊，我今後再也不想在高層提案中看到任何粗心的排版錯誤，明白嗎？
 
@@ -254,6 +558,28 @@ columns are currently disabled — see comments in bakeoff.js.)
 **Gemini (gemini-3.5-flash):**
 > Hey, I had to clean up the mess for that P1 issue again last night. Seriously, I can't stand this anymore—he passed the buck to me again. Can you help hold off the client during this afternoon's meeting first? I'm still struggling to crank out the deck.
 
+**Foundry (gpt-5-mini):** _Error: Foundry (gpt-5-mini) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5-nano):** _Error: Foundry (gpt-5-nano) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5-chat):** _Error: Foundry (gpt-5-chat) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5.1):** _Error: Foundry (gpt-5.1) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-4.1):** _Error: Foundry (gpt-4.1) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-4.1-nano):** _Error: Foundry (gpt-4.1-nano) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (DeepSeek-V4-Flash):** _Error: Foundry (DeepSeek-V4-Flash) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (DeepSeek-V4-Pro):** _Error: Foundry (DeepSeek-V4-Pro) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (Kimi-K2.6):** _Error: Foundry (Kimi-K2.6) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (Kimi-K2.5):** _Error: Foundry (Kimi-K2.5) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (o3):** _Error: Foundry (o3) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
 **DeepL:**
 > Hey, last night that P1 guy made me clean up after him again. Dude, I really can't take it—he even shot the ball at me. In the afternoon meeting, you handle the client for me; I'm still working on the deck.
 
@@ -270,6 +596,28 @@ columns are currently disabled — see comments in bakeoff.js.)
 **Gemini (gemini-3.5-flash):**
 > Regarding this project, we probably need to be a bit more down-to-earth. The previous plan was a bit lackluster, and it didn't resonate with our target audience at all. The manager is eagerly waiting for a new direction now. We can't keep passing the buck and shifting blame anymore; we must deliver a real highlight this time.
 
+**Foundry (gpt-5-mini):** _Error: Foundry (gpt-5-mini) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5-nano):** _Error: Foundry (gpt-5-nano) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5-chat):** _Error: Foundry (gpt-5-chat) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5.1):** _Error: Foundry (gpt-5.1) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-4.1):** _Error: Foundry (gpt-4.1) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-4.1-nano):** _Error: Foundry (gpt-4.1-nano) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (DeepSeek-V4-Flash):** _Error: Foundry (DeepSeek-V4-Flash) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (DeepSeek-V4-Pro):** _Error: Foundry (DeepSeek-V4-Pro) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (Kimi-K2.6):** _Error: Foundry (Kimi-K2.6) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (Kimi-K2.5):** _Error: Foundry (Kimi-K2.5) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (o3):** _Error: Foundry (o3) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
 **DeepL:**
 > When it comes to this project, we all need to be a bit more down-to-earth. The previous plan was a bit half-hearted, and the target audience didn’t connect with it at all. Our managers are now clamoring for a new direction—we can’t keep passing the buck and shifting blame anymore. This time, we absolutely have to come up with something that stands out.
 
@@ -285,6 +633,28 @@ columns are currently disabled — see comments in bakeoff.js.)
 
 **Gemini (gemini-3.5-flash):**
 > That meeting just now was a total waste of time. The boss was making empty promises again and saying all these vague things. He even acted like he was giving me invaluable advice, telling us to "show some warmth." I didn't even bother arguing with him, so I just pretended to agree and nodded along to get it over with.
+
+**Foundry (gpt-5-mini):** _Error: Foundry (gpt-5-mini) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5-nano):** _Error: Foundry (gpt-5-nano) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5-chat):** _Error: Foundry (gpt-5-chat) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-5.1):** _Error: Foundry (gpt-5.1) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-4.1):** _Error: Foundry (gpt-4.1) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (gpt-4.1-nano):** _Error: Foundry (gpt-4.1-nano) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (DeepSeek-V4-Flash):** _Error: Foundry (DeepSeek-V4-Flash) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (DeepSeek-V4-Pro):** _Error: Foundry (DeepSeek-V4-Pro) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (Kimi-K2.6):** _Error: Foundry (Kimi-K2.6) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (Kimi-K2.5):** _Error: Foundry (Kimi-K2.5) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
+
+**Foundry (o3):** _Error: Foundry (o3) API 403: {"error":{"code":"403","message": "Public access is disabled. Please configure private endpoint."}}_
 
 **DeepL:**
 > That meeting earlier was totally pointless. The boss was just out there painting a rosy picture, spouting vague nonsense. He even went so far as to shove money into my pocket as if to say we need to be "warm-hearted." I didn't bother arguing with him; I just played along, nodding and saying "yes, sir."
