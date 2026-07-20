@@ -1,6 +1,6 @@
 # Translation Bake-off Results
 
-Generated 2026-07-20T07:56:57.842Z
+Generated 2026-07-20T08:06:20.677Z
 
 **Run mode:** `SINGLE_MESSAGE_MODE=false` — multi-message batching enabled (`BATCH_SIZE=4`) for Gemini/Qwen/DeepSeek. See the cost warning in the Token &amp; Cost Summary below before quoting any per-message figure.
 

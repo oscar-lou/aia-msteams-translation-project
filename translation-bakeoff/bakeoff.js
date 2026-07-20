@@ -270,22 +270,24 @@ async function translateBatchGemini(msgs, apiKey, model, singleMessage = false) 
 // hardcoded single-deployment integration like translateWithAzureOpenAI below,
 // which targets exactly one fixed AZURE_OPENAI_DEPLOYMENT and is left untouched.
 //
-// URL/body corrected 2026-07 after a real 400 "API version not supported" on
-// every model: Azure's data-plane inference API moved off the old dated
-// api-version scheme (2024-10-21 etc.) to a new "v1" API with NO per-deployment
-// URL segment — confirmed against learn.microsoft.com's current chat-completions
-// reference (POST {endpoint}/openai/v1/chat/completions, api-version is one of
-// "v1"/"preview", model goes in the JSON body). That's why every model failed
-// identically regardless of vendor — it was never a per-model issue.
+// URL/body corrected 2026-07 after live testing (Microsoft's own reference
+// docs were inconsistent on this exact point): Azure's data-plane inference
+// API moved off the old dated api-version scheme (2024-10-21 etc.) to a new
+// "v1" API with NO per-deployment URL segment — POST
+// {endpoint}/openai/v1/chat/completions, model in the JSON body. That's why
+// every model failed identically at first regardless of vendor — never a
+// per-model issue. A second live error then confirmed the /v1 path rejects
+// an "api-version" query param outright ("not allowed when using /v1 path"),
+// so there's deliberately no FOUNDRY_API_VERSION knob — nothing to put there
+// currently has any effect on this path.
 //
 // Keeps its own function (not a reuse of translateBatchOpenAICompatible)
-// specifically to control the api-version query param and use the "api-key"
-// header explicitly, though the v1 API also documents accepting
-// "Authorization: Bearer". Shares buildBatchSystemPrompt()/
+// to use the "api-key" header explicitly, though the v1 API also documents
+// accepting "Authorization: Bearer". Shares buildBatchSystemPrompt()/
 // buildBatchUserContent()/parseBatchResponse(), and honours singleMessage
 // identically to Gemini: raw text in/out, no [[[n]]] wrapping, when true.
-async function translateBatchAzureFoundry(msgs, endpoint, apiKey, deployment, apiVersion, singleMessage = false) {
-  const url = `${endpoint.replace(/\/+$/, "")}/openai/v1/chat/completions?api-version=${apiVersion}`;
+async function translateBatchAzureFoundry(msgs, endpoint, apiKey, deployment, singleMessage = false) {
+  const url = `${endpoint.replace(/\/+$/, "")}/openai/v1/chat/completions`;
 
   const userContent = singleMessage ? msgs[0].text : buildBatchUserContent(msgs);
   const startedAt = Date.now();
@@ -806,7 +808,6 @@ async function main() {
           process.env.FOUNDRY_ENDPOINT,
           process.env.FOUNDRY_API_KEY,
           model,
-          process.env.FOUNDRY_API_VERSION || "v1",
           SINGLE_MESSAGE_MODE
         ),
     });
