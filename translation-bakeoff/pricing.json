@@ -54,15 +54,72 @@
     "_note": "deepl.com/pro-api's API rate table did not render via automated fetch (likely client-side rendered) — fill in the current per-character rate manually before trusting DeepL cost figures."
   },
 
-  "gpt-5-mini": { "inputPer1M": null, "outputPer1M": null, "cachedInputPer1M": null, "_verified": null, "_note": "Azure AI Foundry deployment pricing — verify against your Foundry resource's cost/pricing page, not a generic OpenAI rate card." },
-  "gpt-5-nano": { "inputPer1M": null, "outputPer1M": null, "cachedInputPer1M": null, "_verified": null, "_note": "Azure AI Foundry deployment pricing — verify against your Foundry resource's cost/pricing page, not a generic OpenAI rate card." },
-  "gpt-5-chat": { "inputPer1M": null, "outputPer1M": null, "cachedInputPer1M": null, "_verified": null, "_note": "Azure AI Foundry deployment pricing — verify against your Foundry resource's cost/pricing page, not a generic OpenAI rate card." },
-  "gpt-5.1": { "inputPer1M": null, "outputPer1M": null, "cachedInputPer1M": null, "_verified": null, "_note": "Azure AI Foundry deployment pricing — verify against your Foundry resource's cost/pricing page, not a generic OpenAI rate card." },
-  "gpt-4.1": { "inputPer1M": null, "outputPer1M": null, "cachedInputPer1M": null, "_verified": null, "_note": "Azure AI Foundry deployment pricing — verify against your Foundry resource's cost/pricing page, not a generic OpenAI rate card." },
-  "gpt-4.1-nano": { "inputPer1M": null, "outputPer1M": null, "cachedInputPer1M": null, "_verified": null, "_note": "Azure AI Foundry deployment pricing — verify against your Foundry resource's cost/pricing page, not a generic OpenAI rate card." },
-  "o3": { "inputPer1M": null, "outputPer1M": null, "cachedInputPer1M": null, "_verified": null, "_note": "Azure AI Foundry deployment pricing — verify against your Foundry resource's cost/pricing page. Also a reasoning model: confirm it accepts this script's request shape (system role + temperature) before trusting any results, not just the rate." },
-  "Kimi-K2.6": { "inputPer1M": null, "outputPer1M": null, "cachedInputPer1M": null, "_verified": null, "_note": "Azure AI Foundry deployment pricing — model/version naming not independently verified; confirm it exists in your catalog before trusting a rate or a result." },
-  "Kimi-K2.5": { "inputPer1M": null, "outputPer1M": null, "cachedInputPer1M": null, "_verified": null, "_note": "Azure AI Foundry deployment pricing — model/version naming not independently verified; confirm it exists in your catalog before trusting a rate or a result." },
-  "DeepSeek-V4-Flash": { "inputPer1M": null, "outputPer1M": null, "cachedInputPer1M": null, "_verified": null, "_note": "This is the Foundry-hosted deployment, keyed by its exact deployment name — do NOT copy the rate from the lowercase 'deepseek-v4-flash' entry above, which is DeepSeek's own direct API price. Azure-hosted pricing for the same model is not guaranteed to match." },
-  "DeepSeek-V4-Pro": { "inputPer1M": null, "outputPer1M": null, "cachedInputPer1M": null, "_verified": null, "_note": "This is the Foundry-hosted deployment, keyed by its exact deployment name — do NOT copy the rate from the lowercase 'deepseek-v4-pro' entry above, which is DeepSeek's own direct API price. Azure-hosted pricing for the same model is not guaranteed to match." }
+  "gpt-5-mini": {
+    "inputPer1M": 0.25,
+    "outputPer1M": 2.00,
+    "cachedInputPer1M": 0.025,
+    "_verified": "developers.openai.com/api/docs/models/gpt-5-mini, checked 2026-07-20. This is OpenAI's own direct-API rate, NOT independently confirmed against Azure — the model has zero matching SKUs anywhere in Microsoft's official Retail Prices API (prices.azure.com/api/retail/prices), checked the same day, any region. Azure's 'Global Standard' tier is widely documented to price these OpenAI-family models at parity with OpenAI's direct API, but that parity itself isn't independently verified here — treat as a strong estimate, confirm against your Foundry resource's actual bill before trusting."
+  },
+  "gpt-5-nano": {
+    "inputPer1M": 0.05,
+    "outputPer1M": 0.40,
+    "cachedInputPer1M": 0.005,
+    "_verified": "developers.openai.com/api/docs/models/gpt-5-nano, checked 2026-07-20. Same caveat as gpt-5-mini above: OpenAI direct-API rate, assumed at parity with Azure Global Standard, not independently confirmed against Azure (zero matching SKU in the Retail Prices API, any region, checked same day)."
+  },
+  "gpt-5-chat": {
+    "inputPer1M": 1.25,
+    "outputPer1M": 10.0,
+    "cachedInputPer1M": 0.125,
+    "_verified": "developers.openai.com/api/docs/models/gpt-5-chat-latest, checked 2026-07-20. Same caveat as gpt-5-mini above — OpenAI direct-API rate (identical to gpt-5.1's, see that entry), not independently confirmed against Azure (zero matching SKU in the Retail Prices API, any region)."
+  },
+  "gpt-5.1": {
+    "inputPer1M": 1.25,
+    "outputPer1M": 10.0,
+    "cachedInputPer1M": 0.125,
+    "_verified": "developers.openai.com/api/docs/models/gpt-5.1, checked 2026-07-20. Same caveat as gpt-5-mini above — OpenAI direct-API rate, not independently confirmed against Azure (zero matching SKU in the Retail Prices API, any region). Notably identical to gpt-5-chat's rate."
+  },
+  "gpt-4.1": {
+    "inputPer1M": 2.00,
+    "outputPer1M": 8.00,
+    "cachedInputPer1M": 0.50,
+    "_verified": "developers.openai.com/api/docs/models/gpt-4.1, checked 2026-07-20 — OpenAI's own direct-API rate. Cross-checked against Microsoft's official Azure Retail Prices API the same day: gpt-4.1 DOES appear there, but only as fine-tuning meters (FT Training/hosting/cached-input) — no base/inference consumption meter exists in that catalog at all, so Azure-specific confirmation isn't possible via that source. Assumed at Global Standard parity with this OpenAI rate; confirm against your Foundry resource's bill before trusting."
+  },
+  "gpt-4.1-nano": {
+    "inputPer1M": 0.10,
+    "outputPer1M": 0.40,
+    "cachedInputPer1M": 0.025,
+    "_verified": "developers.openai.com/api/docs/models/gpt-4.1-nano, checked 2026-07-20. Same caveat as gpt-4.1 above — OpenAI direct-API rate; Azure's Retail Prices API has only fine-tuning meters for this model, no base consumption meter to cross-check against."
+  },
+  "o3": {
+    "inputPer1M": 2.0,
+    "outputPer1M": 8.0,
+    "cachedInputPer1M": 0.5,
+    "_verified": "prices.azure.com/api/retail/prices (Microsoft's official Azure Retail Prices API), armRegionName='australiaeast', currencyCode=USD, checked 2026-07-20. Meters: 'o3 0416 Inp glbl' $0.002/1K, 'o3 0416 Outp glbl' $0.008/1K, 'o3 0416 cached Inp glbl' $0.0005/1K — converted to per-1M here. This is the base o3 meter, NOT o3-mini or o3-pro (both priced differently and also present in the region). Unlike every other Foundry model in this file, this one IS a real Azure-specific meter, not an OpenAI-direct-rate assumption."
+  },
+  "Kimi-K2.6": {
+    "inputPer1M": 0.95,
+    "outputPer1M": 4.00,
+    "cachedInputPer1M": 0.16,
+    "_verified": "azure.microsoft.com/en-us/pricing/details/ai-foundry-models/kimi/ (official Microsoft Foundry Models pricing page for Kimi), via search-engine content extraction checked 2026-07-20 — direct WebFetch of this page timed out (heavy client-rendering), so this is grounded in the page's indexed content rather than a raw fetch I could re-verify byte-for-byte myself. Zero matching SKU in the Azure Retail Prices API itself (prices.azure.com) — third-party Foundry catalog models appear to be billed via Azure Marketplace metering, which that API doesn't expose."
+  },
+  "Kimi-K2.5": {
+    "inputPer1M": 0.60,
+    "outputPer1M": 3.00,
+    "cachedInputPer1M": null,
+    "_verified": null,
+    "_note": "STILL UNVERIFIED after a second check, 2026-07-20 — unlike Kimi-K2.6 (confirmed via Microsoft's official Foundry-Kimi pricing page), no official source for K2.5's specific rate turned up in two search rounds. These input/output numbers are unconfirmed; cached is still null. Check your Foundry resource's bill directly."
+  },
+  "DeepSeek-V4-Flash": {
+    "inputPer1M": 0.19,
+    "outputPer1M": 0.51,
+    "cachedInputPer1M": null,
+    "_verified": null,
+    "_note": "STILL UNVERIFIED after a second check, 2026-07-20 — unlike DeepSeek-V4-Pro (see that entry), no official source for Flash's specific rate turned up. Also: a Microsoft Q&A thread reports DeepSeek-V4-Pro billing on Foundry running ~4.5x DeepSeek's own direct-API rate — do NOT treat the lowercase 'deepseek-v4-flash' entry above as a substitute estimate for this one; they are billed through different mechanisms."
+  },
+  "DeepSeek-V4-Pro": {
+    "inputPer1M": 1.75,
+    "outputPer1M": 3.48,
+    "cachedInputPer1M": 0.15,
+    "_verified": "azure.microsoft.com/en-us/pricing/details/ai-foundry-models/deepseek/ (official Microsoft Foundry Models pricing page for DeepSeek), via search-engine content extraction checked 2026-07-20 — same direct-WebFetch-timeout caveat as Kimi-K2.6 above. Input adjusted from a previously-entered 1.74 to 1.75 to match this source; output (3.48) already matched. Zero matching SKU in the Azure Retail Prices API itself — see Kimi-K2.6's note on likely Marketplace billing. Also see the Microsoft Q&A thread on this exact model's Foundry-vs-direct-API billing discrepancy (~4.5x) — this Foundry-specific rate is the correct one to use here regardless, just flagging the discrepancy exists."
+  }
 }
