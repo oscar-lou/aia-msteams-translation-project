@@ -6,29 +6,143 @@ const path = require("path");
 const MESSAGES_FILE = path.join(__dirname, "messages.json");
 const OUTPUT_FILE = path.join(__dirname, "results.md");
 const CACHE_FILE = path.join(__dirname, ".translations-cache.json");
+const PRICING_FILE = path.join(__dirname, "pricing.json");
 
-function buildBatchSystemPrompt() {
-  const script = (process.env.CHINESE_SCRIPT || "Traditional").trim();
+let pricing = {};
+try {
+  pricing = JSON.parse(fs.readFileSync(PRICING_FILE, "utf8"));
+} catch {
+  pricing = {};
+}
+
+// --- Token/cost/latency capture ------------------------------------------
+// Populated by every engine call (batch or single), read back in main() to
+// build the Token & Cost Summary section of results.md. Cache hits never
+// reach a recordUsage() call, so totals only reflect API calls actually made
+// in this run — expected, not a bug, on a mostly-cached rerun.
+const usageLog = [];
+function recordUsage(entry) {
+  usageLog.push(entry);
+}
+
+function median(nums) {
+  if (!nums.length) return null;
+  const sorted = [...nums].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  return sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2;
+}
+
+function mean(nums) {
+  if (!nums.length) return null;
+  return nums.reduce((a, b) => a + b, 0) / nums.length;
+}
+
+// Returns a cost in USD, or null if pricing.json has no usable rate for this
+// entry — callers must treat null as "unknown", never as $0.
+function costForUsage(entry, rates) {
+  if (!rates) return null;
+  if (entry.unit === "characters") {
+    if (typeof rates.perMillionChars !== "number") return null;
+    return ((entry.characters || 0) / 1_000_000) * rates.perMillionChars;
+  }
+  if (typeof rates.inputPer1M !== "number" || typeof rates.outputPer1M !== "number") return null;
+  const input = entry.inputTokens || 0;
+  const output = entry.outputTokens || 0;
+  // cachedTokens is a SUBSET of inputTokens (the portion served from cache at
+  // a discount), not additive — regularInput is what's left after removing it.
+  const cached = entry.cachedTokens || 0;
+  const regularInput = Math.max(input - cached, 0);
+  const cachedRate = typeof rates.cachedInputPer1M === "number" ? rates.cachedInputPer1M : rates.inputPer1M;
   return (
-    `You are a professional translator for a corporate Microsoft Teams workspace ` +
-    `where colleagues write in both Chinese and English. ` +
-    `You will receive several numbered messages, each wrapped like:\n` +
-    `[[[1]]]\n<message text>\n[[[/1]]]\n\n` +
-    `For EACH numbered message, independently: detect its language. If it is any form ` +
-    `of Chinese — Mandarin or Cantonese, Simplified or Traditional, formal or colloquial, ` +
-    `including messages that mix Chinese and English — translate it into natural, ` +
-    `professional English. If it is in English, translate it into Standard Written ` +
-    `Chinese using ${script} characters. ` +
-    `Preserve the original tone and register per message: keep formal messages formal ` +
+    (regularInput / 1_000_000) * rates.inputPer1M +
+    (cached / 1_000_000) * cachedRate +
+    (output / 1_000_000) * rates.outputPer1M
+  );
+}
+
+function summarizeUsage() {
+  const groups = new Map();
+  for (const entry of usageLog) {
+    const key = `${entry.engine}::${entry.model}`;
+    if (!groups.has(key)) {
+      groups.set(key, {
+        engine: entry.engine,
+        model: entry.model,
+        mode: entry.mode,
+        unit: entry.unit,
+        calls: 0,
+        messageCount: 0,
+        inputTokens: 0,
+        outputTokens: 0,
+        cachedTokens: 0,
+        characters: 0,
+        totalCost: 0,
+        costKnown: true,
+        latencies: [],
+      });
+    }
+    const g = groups.get(key);
+    g.calls += 1;
+    g.messageCount += entry.messageCount || 1;
+    g.inputTokens += entry.inputTokens || 0;
+    g.outputTokens += entry.outputTokens || 0;
+    g.cachedTokens += entry.cachedTokens || 0;
+    g.characters += entry.characters || 0;
+    g.latencies.push(entry.latencyMs);
+
+    const cost = costForUsage(entry, pricing[entry.pricingKey]);
+    if (cost === null) {
+      g.costKnown = false;
+    } else {
+      g.totalCost += cost;
+    }
+  }
+  return [...groups.values()];
+}
+
+// singleMessage drops the [[[n]]] numbered-batch protocol section (meaningless
+// for one message) but keeps every translation instruction word-for-word
+// identical, so the two modes stay a fair comparison.
+function buildBatchSystemPrompt(singleMessage = false) {
+  const script = (process.env.CHINESE_SCRIPT || "Traditional").trim();
+
+  let p = `You are a professional translator for a corporate Microsoft Teams workspace ` +
+    `where colleagues write in both Chinese and English. `;
+
+  if (singleMessage) {
+    p += `For this message: detect its language. If it is any form of Chinese — Mandarin or ` +
+      `Cantonese, Simplified or Traditional, formal or colloquial, including messages that ` +
+      `mix Chinese and English — translate it into natural, professional English. ` +
+      `If it is in English, translate it into Standard Written Chinese using ${script} characters. `;
+  } else {
+    p += `You will receive several numbered messages, each wrapped like:\n` +
+      `[[[1]]]\n<message text>\n[[[/1]]]\n\n` +
+      `For EACH numbered message, independently: detect its language. If it is any form ` +
+      `of Chinese — Mandarin or Cantonese, Simplified or Traditional, formal or colloquial, ` +
+      `including messages that mix Chinese and English — translate it into natural, ` +
+      `professional English. If it is in English, translate it into Standard Written ` +
+      `Chinese using ${script} characters. `;
+  }
+
+  p += `Preserve the original tone and register per message: keep formal messages formal ` +
     `and casual messages casual, but always produce clear, workplace-appropriate output. ` +
     `Translate slang, abbreviations, and idioms by their intended meaning — never ` +
-    `word-for-word. Preserve names, @mentions, numbers, URLs, and product names exactly. ` +
-    `Treat every numbered message completely independently — do not let one message's ` +
-    `content or context influence another's translation.\n\n` +
-    `Respond with ONLY the translations, each wrapped in the SAME numbered markers as ` +
-    `the input, in the same order, with no extra commentary:\n` +
-    `[[[1]]]\n<translation of message 1>\n[[[/1]]]\n[[[2]]]\n<translation of message 2>\n[[[/2]]]\n...`
-  );
+    `word-for-word. Preserve names, @mentions, numbers, URLs, and product names exactly. `;
+
+  if (!singleMessage) {
+    p += `Treat every numbered message completely independently — do not let one message's ` +
+      `content or context influence another's translation.\n\n`;
+  }
+
+  if (singleMessage) {
+    p += `Output ONLY the translation, with no quotes, labels, or explanation.`;
+  } else {
+    p += `Respond with ONLY the translations, each wrapped in the SAME numbered markers as ` +
+      `the input, in the same order, with no extra commentary:\n` +
+      `[[[1]]]\n<translation of message 1>\n[[[/1]]]\n[[[2]]]\n<translation of message 2>\n[[[/2]]]\n...`;
+  }
+
+  return p;
 }
 
 function parseBatchResponse(rawText, count) {
@@ -53,10 +167,16 @@ function buildBatchUserContent(msgs) {
 // buildBatchSystemPrompt()/buildBatchUserContent()/parseBatchResponse() as-is,
 // and keeps genuine multi-message batching since each provider's *_MODELS can
 // list several models, each requiring its own full pass over every message.
-async function translateBatchOpenAICompatible(msgs, baseUrl, apiKey, model) {
+//
+// singleMessage bypasses batching entirely: raw text in, raw text out, no
+// [[[n]]] wrapping — matching production behaviour. Returns usage alongside
+// translations rather than recording it directly, since this function doesn't
+// know its own engine label ("Qwen" vs "DeepSeek") — the caller does.
+async function translateBatchOpenAICompatible(msgs, baseUrl, apiKey, model, singleMessage = false) {
   const url = `${baseUrl.replace(/\/+$/, "")}/chat/completions`;
 
-  const userContent = buildBatchUserContent(msgs);
+  const userContent = singleMessage ? msgs[0].text : buildBatchUserContent(msgs);
+  const startedAt = Date.now();
 
   const resp = await fetch(url, {
     method: "POST",
@@ -67,7 +187,7 @@ async function translateBatchOpenAICompatible(msgs, baseUrl, apiKey, model) {
     body: JSON.stringify({
       model,
       messages: [
-        { role: "system", content: buildBatchSystemPrompt() },
+        { role: "system", content: buildBatchSystemPrompt(singleMessage) },
         { role: "user", content: userContent },
       ],
       temperature: 0.2,
@@ -82,7 +202,15 @@ async function translateBatchOpenAICompatible(msgs, baseUrl, apiKey, model) {
     throw new Error(`${model} returned no choices: ${JSON.stringify(data)}`);
   }
   const rawText = choice.message?.content || "";
-  return parseBatchResponse(rawText, msgs.length);
+  const translations = singleMessage ? [rawText.trim()] : parseBatchResponse(rawText, msgs.length);
+  const latencyMs = Date.now() - startedAt;
+  const usage = {
+    inputTokens: data.usage?.prompt_tokens ?? null,
+    outputTokens: data.usage?.completion_tokens ?? null,
+    cachedTokens: data.usage?.prompt_tokens_details?.cached_tokens ?? null,
+    latencyMs,
+  };
+  return { translations, usage };
 }
 
 // --- Gemini (optional engine, for private/VPN validation only) ----------
@@ -90,16 +218,20 @@ async function translateBatchOpenAICompatible(msgs, baseUrl, apiKey, model) {
 // contents/parts, not messages/choices), so it needs its own function — but it
 // shares buildBatchSystemPrompt()/buildBatchUserContent()/parseBatchResponse()
 // with every other engine, for a fair apples-to-apples comparison.
-async function translateBatchGemini(msgs, apiKey, model) {
+//
+// singleMessage bypasses batching entirely: raw text in, raw text out, no
+// [[[n]]] wrapping — matching production behaviour.
+async function translateBatchGemini(msgs, apiKey, model, singleMessage = false) {
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
-  const userContent = buildBatchUserContent(msgs);
+  const userContent = singleMessage ? msgs[0].text : buildBatchUserContent(msgs);
+  const startedAt = Date.now();
 
   const resp = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      systemInstruction: { parts: [{ text: buildBatchSystemPrompt() }] },
+      systemInstruction: { parts: [{ text: buildBatchSystemPrompt(singleMessage) }] },
       contents: [{ role: "user", parts: [{ text: userContent }] }],
       generationConfig: { temperature: 0.2 },
     }),
@@ -121,7 +253,72 @@ async function translateBatchGemini(msgs, apiKey, model) {
     );
   }
   const rawText = parts.map((p) => p.text || "").join("");
-  return parseBatchResponse(rawText, msgs.length);
+  const translations = singleMessage ? [rawText.trim()] : parseBatchResponse(rawText, msgs.length);
+  const latencyMs = Date.now() - startedAt;
+  const usage = {
+    inputTokens: data.usageMetadata?.promptTokenCount ?? null,
+    outputTokens: data.usageMetadata?.candidatesTokenCount ?? null,
+    cachedTokens: data.usageMetadata?.cachedContentTokenCount ?? null,
+    latencyMs,
+  };
+  return { translations, usage };
+}
+
+// --- Azure AI Foundry (broad multi-model screening) ---------------------
+// One endpoint + one key, many deployments (FOUNDRY_MODELS, comma-separated) —
+// that's what makes this a configurable screening list rather than a second
+// hardcoded single-deployment integration like translateWithAzureOpenAI below,
+// which targets exactly one fixed AZURE_OPENAI_DEPLOYMENT and is left untouched.
+//
+// Foundry/Azure OpenAI's request shape addresses the model via the URL path
+// (/openai/deployments/{name}/...) with an "api-key" header, not OpenAI's
+// single-URL + "Authorization: Bearer" + model-in-body shape — so, same
+// reasoning as Gemini's separate function, this can't reuse
+// translateBatchOpenAICompatible as-is. It still shares
+// buildBatchSystemPrompt()/buildBatchUserContent()/parseBatchResponse(), and
+// honours singleMessage identically to Gemini: raw text in/out, no [[[n]]]
+// wrapping, when true.
+async function translateBatchAzureFoundry(msgs, endpoint, apiKey, deployment, apiVersion, singleMessage = false) {
+  const url = `${endpoint.replace(/\/+$/, "")}/openai/deployments/${deployment}/chat/completions?api-version=${apiVersion}`;
+
+  const userContent = singleMessage ? msgs[0].text : buildBatchUserContent(msgs);
+  const startedAt = Date.now();
+
+  const resp = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "api-key": apiKey,
+    },
+    body: JSON.stringify({
+      messages: [
+        { role: "system", content: buildBatchSystemPrompt(singleMessage) },
+        { role: "user", content: userContent },
+      ],
+      temperature: 0.2,
+    }),
+  });
+  if (!resp.ok) {
+    // Deliberately includes the full status + body — at screening scale, one
+    // bad deployment name or unsupported-parameter error needs to be
+    // diagnosable without re-running just that model.
+    throw new Error(`Foundry (${deployment}) API ${resp.status}: ${await resp.text()}`);
+  }
+  const data = await resp.json();
+  const choice = data.choices?.[0];
+  if (!choice) {
+    throw new Error(`Foundry (${deployment}) returned no choices: ${JSON.stringify(data)}`);
+  }
+  const rawText = choice.message?.content || "";
+  const translations = singleMessage ? [rawText.trim()] : parseBatchResponse(rawText, msgs.length);
+  const latencyMs = Date.now() - startedAt;
+  const usage = {
+    inputTokens: data.usage?.prompt_tokens ?? null,
+    outputTokens: data.usage?.completion_tokens ?? null,
+    cachedTokens: data.usage?.prompt_tokens_details?.cached_tokens ?? null,
+    latencyMs,
+  };
+  return { translations, usage };
 }
 
 // --- DeepL (optional second engine, for side-by-side comparison) -------
@@ -137,6 +334,7 @@ async function translateWithDeepL(text, targetLang) {
   if (!process.env.DEEPL_API_KEY) {
     throw new Error("DEEPL_API_KEY is not set.");
   }
+  const startedAt = Date.now();
   const resp = await fetch("https://api-free.deepl.com/v2/translate", {
     method: "POST",
     headers: {
@@ -153,6 +351,19 @@ async function translateWithDeepL(text, targetLang) {
   if (!translation) {
     throw new Error(`DeepL returned no translation: ${JSON.stringify(data)}`);
   }
+  const latencyMs = Date.now() - startedAt;
+  // DeepL bills per source character, not per token — recorded under its own
+  // unit so the report never implies characters and tokens are comparable.
+  recordUsage({
+    engine: "DeepL",
+    model: null,
+    pricingKey: "deepl",
+    mode: "single",
+    unit: "characters",
+    messageCount: 1,
+    characters: text.length,
+    latencyMs,
+  });
   return translation.text;
 }
 
@@ -185,6 +396,7 @@ async function translateWithAzureOpenAI(text) {
 
   const url = `${endpoint}/openai/deployments/${deployment}/chat/completions?api-version=${apiVersion}`;
   const userContent = `[[[1]]]\n${text}\n[[[/1]]]`;
+  const startedAt = Date.now();
 
   const resp = await fetch(url, {
     method: "POST",
@@ -214,6 +426,19 @@ async function translateWithAzureOpenAI(text) {
   if (translation === null) {
     throw new Error("Azure OpenAI response could not be parsed for the expected marker format.");
   }
+  const latencyMs = Date.now() - startedAt;
+  recordUsage({
+    engine: "Azure OpenAI",
+    model: deployment,
+    pricingKey: "azure-openai",
+    mode: "single",
+    unit: "tokens",
+    messageCount: 1,
+    inputTokens: data.usage?.prompt_tokens ?? null,
+    outputTokens: data.usage?.completion_tokens ?? null,
+    cachedTokens: data.usage?.prompt_tokens_details?.cached_tokens ?? null,
+    latencyMs,
+  });
   return translation;
 }
 
@@ -231,6 +456,14 @@ function sleep(ms) {
 // its configured models. translateFn(batch, model) does the actual API call —
 // everything else (batching, caching, per-model error isolation) is shared,
 // so this logic isn't duplicated per provider regardless of request shape.
+//
+// mode ("batch" | "single") is stamped onto every usage record AND folded
+// into the persistent cache key. Without that second part, switching
+// SINGLE_MESSAGE_MODE between runs would silently serve a translation cached
+// under the other mode as if it were this mode's output — corrupting the
+// exact comparison this toggle exists to produce. The in-memory row[cacheKey]
+// used for this run's report doesn't need the same treatment: mode is fixed
+// for the whole run, so there's no same-run collision to guard against.
 async function runBatchEnginePass({
   rows,
   cache,
@@ -238,14 +471,16 @@ async function runBatchEnginePass({
   models,
   batchSize,
   label,
+  mode,
   translateFn,
 }) {
   for (const model of models) {
+    const cacheModelKey = `${model}#${mode}`;
     const pendingForModel = [];
     for (const row of rows) {
       const cached = cache[row.id];
       const cachedTranslation =
-        cached && cached.text === row.text && cached[cacheKey] && cached[cacheKey][model];
+        cached && cached.text === row.text && cached[cacheKey] && cached[cacheKey][cacheModelKey];
       row[cacheKey] = row[cacheKey] || {};
       if (cachedTranslation) {
         row[cacheKey][model] = { translation: cachedTranslation, error: null };
@@ -266,8 +501,20 @@ async function runBatchEnginePass({
         `- Batch ${b + 1}/${modelBatches.length} (${batch.map((r) => r.id).join(", ")})... `
       );
       try {
-        const translations = await translateFn(batch, model);
+        const { translations, usage } = await translateFn(batch, model);
         console.log("done");
+        recordUsage({
+          engine: label,
+          model,
+          pricingKey: model,
+          mode,
+          unit: "tokens",
+          messageCount: batch.length,
+          inputTokens: usage.inputTokens,
+          outputTokens: usage.outputTokens,
+          cachedTokens: usage.cachedTokens,
+          latencyMs: usage.latencyMs,
+        });
         batch.forEach((row, i) => {
           const t = translations[i];
           if (t === null) {
@@ -280,14 +527,19 @@ async function runBatchEnginePass({
             cache[row.id] = {
               ...(cache[row.id] || {}),
               text: row.text,
-              [cacheKey]: { ...((cache[row.id] || {})[cacheKey] || {}), [model]: t },
+              [cacheKey]: { ...((cache[row.id] || {})[cacheKey] || {}), [cacheModelKey]: t },
             };
           }
         });
       } catch (err) {
-        console.log("FAILED");
+        const errText = String(err.message || err);
+        // Printed in full (not just "FAILED") so a wide multi-model screen can
+        // be triaged from the terminal alone — deployment-name typos, unsupported
+        // parameters, and auth issues all need to be diagnosable without
+        // re-running just that one model.
+        console.log(`FAILED — ${errText}`);
         batch.forEach((row) => {
-          row[cacheKey][model] = { translation: null, error: String(err.message || err) };
+          row[cacheKey][model] = { translation: null, error: errText };
         });
       }
       if (b < modelBatches.length - 1) await sleep(2000);
@@ -312,10 +564,18 @@ async function main() {
     cache = JSON.parse(fs.readFileSync(CACHE_FILE, "utf8"));
   }
 
+  // SINGLE_MESSAGE_MODE=true bypasses batching entirely (one message per API
+  // call, matching production) for every batch-capable engine below. Default
+  // false keeps the existing multi-message batching, [[[n]]] protocol,
+  // BATCH_SIZE, and inter-batch pause exactly as they were.
+  const SINGLE_MESSAGE_MODE = /^true$/i.test((process.env.SINGLE_MESSAGE_MODE || "").trim());
+
   // BATCH_SIZE messages per API call, to conserve quota — shared by every
   // batch-capable engine below (each *_MODELS/model entry gets its own full
-  // pass of batches).
-  const batchSize = Math.max(1, parseInt(process.env.BATCH_SIZE || "4", 10));
+  // pass of batches). Forced to 1 in single-message mode, where BATCH_SIZE
+  // has no effect by design.
+  const configuredBatchSize = Math.max(1, parseInt(process.env.BATCH_SIZE || "4", 10));
+  const batchSize = SINGLE_MESSAGE_MODE ? 1 : configuredBatchSize;
 
   const rows = messages.map((m) => ({ ...m }));
 
@@ -437,8 +697,9 @@ async function main() {
   //     models: qwenModels,
   //     batchSize,
   //     label: "Qwen",
+  //     mode: SINGLE_MESSAGE_MODE ? "single" : "batch",
   //     translateFn: (batch, model) =>
-  //       translateBatchOpenAICompatible(batch, process.env.QWEN_BASE_URL, process.env.QWEN_API_KEY, model),
+  //       translateBatchOpenAICompatible(batch, process.env.QWEN_BASE_URL, process.env.QWEN_API_KEY, model, SINGLE_MESSAGE_MODE),
   //   });
   //   fs.writeFileSync(CACHE_FILE, JSON.stringify(cache, null, 2), "utf8");
   // } else {
@@ -471,8 +732,9 @@ async function main() {
   //     models: deepseekModels,
   //     batchSize,
   //     label: "DeepSeek",
+  //     mode: SINGLE_MESSAGE_MODE ? "single" : "batch",
   //     translateFn: (batch, model) =>
-  //       translateBatchOpenAICompatible(batch, process.env.DEEPSEEK_BASE_URL, process.env.DEEPSEEK_API_KEY, model),
+  //       translateBatchOpenAICompatible(batch, process.env.DEEPSEEK_BASE_URL, process.env.DEEPSEEK_API_KEY, model, SINGLE_MESSAGE_MODE),
   //   });
   //   fs.writeFileSync(CACHE_FILE, JSON.stringify(cache, null, 2), "utf8");
   // } else {
@@ -497,20 +759,104 @@ async function main() {
       models: geminiModels,
       batchSize,
       label: "Gemini",
-      translateFn: (batch, model) => translateBatchGemini(batch, process.env.GEMINI_API_KEY, model),
+      mode: SINGLE_MESSAGE_MODE ? "single" : "batch",
+      translateFn: (batch, model) =>
+        translateBatchGemini(batch, process.env.GEMINI_API_KEY, model, SINGLE_MESSAGE_MODE),
     });
     fs.writeFileSync(CACHE_FILE, JSON.stringify(cache, null, 2), "utf8");
   } else {
     console.log("\nGEMINI_API_KEY not set — skipping the Gemini column.");
   }
 
+  // --- Azure AI Foundry pass (broad multi-model screening) -----------------
+  // Skipped entirely, with every other engine's results untouched, if not
+  // fully configured. FOUNDRY_MODELS is comma-separated; each deployment gets
+  // its own full pass and its own column, cached independently so one bad
+  // deployment name can't affect another model's cached results. Deployment
+  // failures (typos, unsupported params, auth) are expected at this scale —
+  // runBatchEnginePass's per-batch try/catch isolates them and keeps going.
+  const foundryModels = (process.env.FOUNDRY_MODELS || "")
+    .split(",")
+    .map((s) => s.trim())
+    .filter(Boolean);
+  const foundryEnabled = !!(
+    process.env.FOUNDRY_ENDPOINT &&
+    process.env.FOUNDRY_API_KEY &&
+    foundryModels.length
+  );
+  if (foundryEnabled) {
+    await runBatchEnginePass({
+      rows,
+      cache,
+      cacheKey: "foundry",
+      models: foundryModels,
+      batchSize,
+      label: "Foundry",
+      mode: SINGLE_MESSAGE_MODE ? "single" : "batch",
+      translateFn: (batch, model) =>
+        translateBatchAzureFoundry(
+          batch,
+          process.env.FOUNDRY_ENDPOINT,
+          process.env.FOUNDRY_API_KEY,
+          model,
+          process.env.FOUNDRY_API_VERSION || "2024-10-21",
+          SINGLE_MESSAGE_MODE
+        ),
+    });
+    fs.writeFileSync(CACHE_FILE, JSON.stringify(cache, null, 2), "utf8");
+  } else {
+    console.log(
+      "\nFOUNDRY_ENDPOINT/FOUNDRY_API_KEY/FOUNDRY_MODELS not fully set — skipping the Foundry screen."
+    );
+  }
+
+  // Computed once, before building any report section, so both the early
+  // Model Screening Summary and the later Token & Cost Summary can use it.
+  const usageSummary = summarizeUsage();
+
   // --- Write a clean side-by-side Markdown report ------------------------
   let md = `# Translation Bake-off Results\n\n`;
   md += `Generated ${new Date().toISOString()}\n\n`;
+  md += `**Run mode:** \`SINGLE_MESSAGE_MODE=${SINGLE_MESSAGE_MODE}\` — `;
+  md += SINGLE_MESSAGE_MODE
+    ? `one message per API call for every batch-capable engine, matching production behaviour.\n\n`
+    : `multi-message batching enabled (\`BATCH_SIZE=${configuredBatchSize}\`) for Gemini/Qwen/DeepSeek. ` +
+      `See the cost warning in the Token &amp; Cost Summary below before quoting any per-message figure.\n\n`;
   md += `Blind-review tip: cover the engine-name headers ("Teams Native", "Gemini",\n`;
-  md += `"DeepL", "Azure OpenAI") when showing this to reviewers, so the ranking\n`;
-  md += `isn't biased by knowing which engine is which. (Qwen/DeepSeek columns are\n`;
-  md += `currently disabled — see comments in bakeoff.js.)\n\n`;
+  md += `"DeepL", "Azure OpenAI", "Foundry (model)") when showing this to reviewers,\n`;
+  md += `so the ranking isn't biased by knowing which engine is which. (Qwen/DeepSeek\n`;
+  md += `columns are currently disabled — see comments in bakeoff.js.)\n\n`;
+
+  // --- Model screening summary (Foundry) -----------------------------------
+  // One row per deployment, so a wide multi-model run can be triaged for
+  // success/failure and rough latency/cost BEFORE reading any of the full
+  // per-message translation columns below — the whole point at this scale.
+  if (foundryEnabled) {
+    md += `## Foundry Model Screening Summary\n\n`;
+    md += `Deployment names are whatever you named them in your Foundry resource's ` +
+      `Deployments tab — a "failed" row below is often just a naming mismatch, not ` +
+      `a real capability problem. Full per-message output for each model is further ` +
+      `down, under its own \`**Foundry (model):**\` heading.\n\n`;
+    md += `| Model | Status | OK | Failed | Mean latency ms | Total tokens |\n`;
+    md += `|---|---|---|---|---|---|\n`;
+    for (const model of foundryModels) {
+      let ok = 0;
+      let failed = 0;
+      for (const row of rows) {
+        const result = row.foundry && row.foundry[model];
+        if (!result) continue;
+        if (result.error) failed++;
+        else ok++;
+      }
+      const usageEntry = usageSummary.find((g) => g.engine === "Foundry" && g.model === model);
+      const meanLatency = usageEntry && usageEntry.latencies.length ? Math.round(mean(usageEntry.latencies)) : null;
+      const totalTokens = usageEntry ? usageEntry.inputTokens + usageEntry.outputTokens : null;
+      const status = ok > 0 && failed === 0 ? "✅" : ok > 0 && failed > 0 ? "⚠️ partial" : "❌";
+      md +=
+        `| ${model} | ${status} | ${ok} | ${failed} | ${meanLatency ?? "—"} | ${totalTokens ?? "—"} |\n`;
+    }
+    md += `\n`;
+  }
 
   for (const row of rows) {
     md += `---\n\n`;
@@ -524,6 +870,16 @@ async function main() {
           md += `**Gemini (${model}):** _Error: ${result.error}_\n\n`;
         } else if (result) {
           md += `**Gemini (${model}):**\n> ${result.translation}\n\n`;
+        }
+      }
+    }
+    if (foundryEnabled) {
+      for (const model of foundryModels) {
+        const result = row.foundry && row.foundry[model];
+        if (result && result.error) {
+          md += `**Foundry (${model}):** _Error: ${result.error}_\n\n`;
+        } else if (result) {
+          md += `**Foundry (${model}):**\n> ${result.translation}\n\n`;
         }
       }
     }
@@ -576,6 +932,41 @@ async function main() {
         md += `**Azure OpenAI:**\n> ${row.azure_openai_translation}\n\n`;
       }
     }
+  }
+
+  // --- Token & cost summary ------------------------------------------------
+  // Figures reflect only API calls actually made THIS run — cache hits are
+  // free and correctly contribute nothing here.
+  if (usageSummary.length) {
+    md += `---\n\n## Token &amp; Cost Summary\n\n`;
+    if (!SINGLE_MESSAGE_MODE) {
+      md += `> ⚠️ **Batched-mode cost warning:** Gemini/Qwen/DeepSeek figures below came from ` +
+        `calls bundling multiple messages together. Each call's fixed system-prompt overhead ` +
+        `is divided across every message in that batch, so "cost/message" here ` +
+        `*understates* real production cost, where every message pays that overhead alone. ` +
+        `Re-run with \`SINGLE_MESSAGE_MODE=true\` for a number that matches production. ` +
+        `(DeepL and Azure OpenAI are unaffected — they always send one message per call, ` +
+        `in either mode.)\n\n`;
+    }
+    md += `Rates come from \`pricing.json\` and must be kept in sync with each vendor's current ` +
+      `pricing page — see the comment at the top of that file. "rate not set" means ` +
+      `\`pricing.json\` has no usable rate for that engine/model, not that it's free.\n\n`;
+    md += `| Engine | Model | Mode | Calls | Messages | Input tok | Output tok | Cached tok | Chars | Cost/message | Latency ms (median/min/max) |\n`;
+    md += `|---|---|---|---|---|---|---|---|---|---|---|\n`;
+    for (const g of usageSummary) {
+      const costPerMsg = g.costKnown && g.messageCount ? g.totalCost / g.messageCount : null;
+      const costCell = g.costKnown ? `$${costPerMsg.toFixed(6)}` : "_rate not set_";
+      const lat = g.latencies;
+      md +=
+        `| ${g.engine} | ${g.model || "—"} | ${g.mode} | ${g.calls} | ${g.messageCount} | ` +
+        `${g.unit === "tokens" ? g.inputTokens : "—"} | ` +
+        `${g.unit === "tokens" ? g.outputTokens : "—"} | ` +
+        `${g.unit === "tokens" ? g.cachedTokens : "—"} | ` +
+        `${g.unit === "characters" ? g.characters : "—"} | ` +
+        `${costCell} | ` +
+        `${Math.round(median(lat))} / ${Math.min(...lat)} / ${Math.max(...lat)} |\n`;
+    }
+    md += `\n`;
   }
 
   fs.writeFileSync(OUTPUT_FILE, md, "utf8");

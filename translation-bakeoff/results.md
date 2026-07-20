@@ -1,11 +1,13 @@
 # Translation Bake-off Results
 
-Generated 2026-07-17T02:07:06.706Z
+Generated 2026-07-20T04:17:46.984Z
+
+**Run mode:** `SINGLE_MESSAGE_MODE=false` — multi-message batching enabled (`BATCH_SIZE=4`) for Gemini/Qwen/DeepSeek. See the cost warning in the Token &amp; Cost Summary below before quoting any per-message figure.
 
 Blind-review tip: cover the engine-name headers ("Teams Native", "Gemini",
-"DeepL", "Azure OpenAI") when showing this to reviewers, so the ranking
-isn't biased by knowing which engine is which. (Qwen/DeepSeek columns are
-currently disabled — see comments in bakeoff.js.)
+"DeepL", "Azure OpenAI", "Foundry (model)") when showing this to reviewers,
+so the ranking isn't biased by knowing which engine is which. (Qwen/DeepSeek
+columns are currently disabled — see comments in bakeoff.js.)
 
 ---
 
@@ -34,7 +36,7 @@ currently disabled — see comments in bakeoff.js.)
 > Please reply with the quote as soon as possible; the client needs to decide today
 
 **Gemini (gemini-3.5-flash):**
-> Please reply with the quote as soon as possible; the client needs to make a decision today.
+> Could you please reply with the quote as soon as possible? The client needs to make a decision today.
 
 **DeepL:**
 > Please get back to us with a quote as soon as possible; the client needs to make a decision today.
@@ -50,13 +52,13 @@ currently disabled — see comments in bakeoff.js.)
 > 請確認於 EOD 前已收到簽署的保密協議
 
 **Gemini (gemini-3.5-flash):**
-> 請在今天下班前確認已收到簽署的保密協議 (NDA)。
+> 請於今日下班前確認已收到簽署的保密協議。
 
 **DeepL (Traditional Chinese):**
-> 請於今日下班前確認已收到經簽署的保密協議。
+> 請於今日收市前確認已收到經簽署的保密協議。
 
 **DeepL (Cantonese):**
-> 請於收市前確認收到已簽署嘅保密協議。
+> 請於收市前確認已收到簽署嘅保密協議。
 
 ---
 
@@ -69,10 +71,10 @@ currently disabled — see comments in bakeoff.js.)
 > 說實話，我現在真的沒精力把它關掉。我們能先擱置到第三季嗎？
 
 **Gemini (gemini-3.5-flash):**
-> 老實說，我目前真的抽不出時間私下討論這件事。我們能先把它擱置到第三季嗎？
+> 老實說，我目前真的沒有心力私底下討論這件事。我們可以先把它擱置到第三季嗎？
 
 **DeepL (Traditional Chinese):**
-> 老實說，我現在實在抽不出時間在私下討論這個問題。我們能不能先擱置一下，等到第三季再說？
+> 老實說，我現在實在沒空把這件事移到私下討論。我們能不能先擱置一下，等到第三季再說？
 
 **DeepL (Cantonese):**
 > 我真係而家冇能力將呢件事 offline 處理。可唔可以等到第三季先再傾?
@@ -88,7 +90,7 @@ currently disabled — see comments in bakeoff.js.)
 > 在確定提供商之前，先來個快速的烘焙大賽。我們也必須確保在 Stage 上對自己的 API 進行過度優化
 
 **Gemini (gemini-3.5-flash):**
-> 在我們最終確定合作廠商之前，先讓這兩個平台進行一次快速的對比測試。同時，我們也需要確保在 staging 環境中實際試用我們自己的 API。
+> 在我們最終確定供應商之前，先對這兩個平台進行一次快速的對比測試吧。另外，我們也需要確保在 staging 環境中內部試用我們自己的 API。
 
 **DeepL (Traditional Chinese):**
 > 在確定供應商之前，讓我們先對這兩套平台進行一次快速比對測試。此外，我們還需確保在預生產環境中實際使用我們自己的 API。
@@ -107,7 +109,7 @@ currently disabled — see comments in bakeoff.js.)
 > 根據我上封信，未來我希望能避免各自為政。請把所有面向客戶的溝通都通知我。
 
 **Gemini (gemini-3.5-flash):**
-> 誠如我上一封郵件所述，希望今後我們能避免各自為政。所有與客戶對接的溝通，都請務必讓我知悉。
+> 正如我上一封郵件所述，希望我們今後能避免各自為政。所有面對客戶的溝通，還請務必讓我知悉。
 
 **DeepL (Traditional Chinese):**
 > 如我上一封電子郵件所述，今後若能避免各自為政，我將不勝感激。請將所有與客戶相關的溝通內容都抄送給我。
@@ -126,10 +128,10 @@ currently disabled — see comments in bakeoff.js.)
 > Everyone is fiercely competitive on this project, the supervisor keeps making empty promises, and in the end, when something goes wrong, it's us frontline staff who have to take the blame.
 
 **Gemini (gemini-3.5-flash):**
-> Everyone is caught up in a rat race on this project, and the manager does nothing but make empty promises. If anything goes wrong in the end, it's those of us at the bottom who will have to take the blame.
+> Everyone is burning themselves out on this project, and the manager does nothing but make empty promises. If things go south, it's us junior staff who will end up taking the fall.
 
 **DeepL:**
-> Everyone on this project is caught up in the rat race, and our manager spends all day making empty promises. When things finally go wrong, it’s us on the front lines who end up taking the fall.
+> Everyone on this project is caught up in the rat race, and our manager spends all day making empty promises—but when things go wrong, it’s still us on the front lines who end up taking the fall.
 
 ---
 
@@ -142,7 +144,7 @@ currently disabled — see comments in bakeoff.js.)
 > It seems the client has some better complaints. We'd better plan ahead to avoid being caught off guard when the time comes.
 
 **Gemini (gemini-3.5-flash):**
-> The client seems to have some minor complaints. We'd better be proactive and plan ahead so we don't get caught off guard when the time comes.
+> The client seems to have some complaints. We'd better be proactive so we don't get caught off guard.
 
 **DeepL:**
 > The client seems to have some reservations, so we’d better take proactive measures to avoid being caught off guard later.
@@ -158,7 +160,7 @@ currently disabled — see comments in bakeoff.js.)
 > If Party B fails to perform its payment obligations, Party A and the guarantor shall bear joint responsibility, and may not claim exemption on the grounds of force majeure.
 
 **Gemini (gemini-3.5-flash):**
-> If Party B fails to fulfill its payment obligations, Party A and the guarantor shall bear joint and several liability, and may not claim exemption from liability on the grounds of force majeure.
+> If Party B fails to fulfill its payment obligations, Party A and the guarantor shall bear joint and several liability, and shall not claim exemption from liability on the grounds of force majeure.
 
 **DeepL:**
 > If Party B fails to fulfill its payment obligations, Party A and the guarantor shall be jointly and severally liable and may not claim exemption from liability on the grounds of force majeure.
@@ -174,7 +176,7 @@ currently disabled — see comments in bakeoff.js.)
 > 鑑於目前的燃燒率，我們只剩下大約四個月的跑道，貸款人現在要求對抵押品進行更大的理髮。
 
 **Gemini (gemini-3.5-flash):**
-> 以目前的資金消耗速度，我們的營運資金大約只夠維持四個月，且貸方目前要求提高抵押品的折價幅度。
+> 以目前的資金消耗率來看，我們的資金大約只能再撐四個月，而且貸款機構現在要求對抵押品進行更大的折價。
 
 **DeepL (Traditional Chinese):**
 > 以目前的資金消耗速度來看，我們只剩下大約四個月的營運資金，而貸款方現在要求對抵押品進行更大的減值。
@@ -193,10 +195,10 @@ currently disabled — see comments in bakeoff.js.)
 > 她因為他在合併案上失職，把他推到車上。
 
 **Gemini (gemini-3.5-flash):**
-> 她把責任推給他，因為他把合併案搞砸了。
+> 她把責任推到他身上，因為他搞砸了這次的合併案。
 
 **DeepL (Traditional Chinese):**
-> 她把他當替罪羊，因為他在這樁合併案上搞砸了。
+> 她把他當替罪羊，因為他在這樁合併案中搞砸了。
 
 **DeepL (Cantonese):**
 > 佢因為佢搞砸咗合併,就將佢賣咗。
@@ -212,13 +214,13 @@ currently disabled — see comments in bakeoff.js.)
 > 兄弟，你待會想一起吃點東西嗎？
 
 **Gemini (gemini-3.5-flash):**
-> 嗨，等一下要不要一起去吃點東西？
+> 嗨老兄，等一下要不要一起去吃點東西？
 
 **DeepL (Traditional Chinese):**
 > 嗨老兄，待會兒要一起吃點東西嗎？
 
 **DeepL (Cantonese):**
-> 喂兄弟,你遲啲有冇興趣去食嘢?
+> 喂兄弟,你今晚有冇興趣去食嘢?
 
 ---
 
@@ -231,13 +233,13 @@ currently disabled — see comments in bakeoff.js.)
 > 我們團隊上週的簡報被罵了，我不想再看到任何行政提案格式混亂，你懂嗎？
 
 **Gemini (gemini-3.5-flash):**
-> 我們團隊上週的簡報被狠狠批了一頓。我再也不想在呈給高層的提案中看到任何粗心大意的排版錯誤，明白了嗎？
+> 我們團隊上週的簡報被痛批了一頓。我不希望以後在給高層的提案中再看到任何粗心的排版錯誤，明白了嗎？
 
 **DeepL (Traditional Chinese):**
-> 上週我們的團隊在簡報中遭到猛烈抨擊，我今後再也不想在高層提案中看到任何粗心的排版錯誤，你明白嗎？
+> 上週我們的團隊在簡報中遭到猛烈抨擊，我今後再也不想在高層提案中看到任何粗心的排版錯誤，明白嗎？
 
 **DeepL (Cantonese):**
-> 我哋團隊上星期嘅簡報畀人鬧到好慘,我唔想再見到任何粗疏嘅格式錯誤喺高層提案度,你明唔明?
+> 我哋團隊上星期嘅簡報畀人鬧到好慘,我唔想再見到任何粗疏嘅格式錯誤喺高層提案度,明唔明?
 
 ---
 
@@ -250,9 +252,10 @@ currently disabled — see comments in bakeoff.js.)
 > _(not filled in — paste Teams' translation into messages.json)_
 
 **Gemini (gemini-3.5-flash):**
-> Hey, I had to clean up the mess for last night's P1 issue again. Seriously, I can't take this anymore—he passed the buck to me again. Can you help hold off the client during this afternoon's meeting first? I'm still struggling to finish the deck.
+> Hey, I had to clean up the mess for that P1 issue again last night. Seriously, I can't stand this anymore—he passed the buck to me again. Can you help hold off the client during this afternoon's meeting first? I'm still struggling to crank out the deck.
 
-**DeepL:** _Error: fetch failed_
+**DeepL:**
+> Hey, last night that P1 guy made me clean up after him again. Dude, I really can't take it—he even shot the ball at me. In the afternoon meeting, you handle the client for me; I'm still working on the deck.
 
 ---
 
@@ -265,7 +268,7 @@ currently disabled — see comments in bakeoff.js.)
 > _(not filled in — paste Teams' translation into messages.json)_
 
 **Gemini (gemini-3.5-flash):**
-> Regarding this project, we probably need to be more grounded. The previous planning lacked impact, and the target audience didn't connect with it at all. The manager is eagerly waiting for a new direction now. We can't keep passing the buck and shifting blame anymore; we must deliver a real highlight this time.
+> Regarding this project, we probably need to be a bit more down-to-earth. The previous plan was a bit lackluster, and it didn't resonate with our target audience at all. The manager is eagerly waiting for a new direction now. We can't keep passing the buck and shifting blame anymore; we must deliver a real highlight this time.
 
 **DeepL:**
 > When it comes to this project, we all need to be a bit more down-to-earth. The previous plan was a bit half-hearted, and the target audience didn’t connect with it at all. Our managers are now clamoring for a new direction—we can’t keep passing the buck and shifting blame anymore. This time, we absolutely have to come up with something that stands out.
@@ -281,7 +284,7 @@ currently disabled — see comments in bakeoff.js.)
 > _(not filled in — paste Teams' translation into messages.json)_
 
 **Gemini (gemini-3.5-flash):**
-> The meeting just now was a total waste of time. The boss was making empty promises again and saying all kinds of vague things. He even acted like he was imparting great wisdom, telling us we need to "show warmth." I couldn't even be bothered to argue with him, so I just played along and nodded to get it over with.
+> That meeting just now was a total waste of time. The boss was making empty promises again and saying all these vague things. He even acted like he was giving me invaluable advice, telling us to "show some warmth." I didn't even bother arguing with him, so I just pretended to agree and nodded along to get it over with.
 
 **DeepL:**
 > That meeting earlier was totally pointless. The boss was just out there painting a rosy picture, spouting vague nonsense. He even went so far as to shove money into my pocket as if to say we need to be "warm-hearted." I didn't bother arguing with him; I just played along, nodding and saying "yes, sir."

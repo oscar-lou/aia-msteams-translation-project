@@ -1,0 +1,68 @@
+{
+  "_comment": "Per-1M-token rates (per-1M-character for DeepL). MUST be re-verified against each vendor's current pricing page before trusting any cost figure in results.md — pricing changes often and nothing here is auto-synced. Use null for any rate you haven't personally verified: the report will show 'rate not set' instead of a misleading $0.00.",
+
+  "gemini-2.5-pro": {
+    "inputPer1M": 1.25,
+    "outputPer1M": 10.0,
+    "cachedInputPer1M": 0.125,
+    "_verified": "ai.google.dev/gemini-api/docs/pricing, checked 2026-07-17. This is the <=200k-token-prompt tier; prompts over 200k tokens bill at 2.50 / 15.00 / 0.25 instead, which this file does not model."
+  },
+  "gemini-2.5-flash": {
+    "inputPer1M": null,
+    "outputPer1M": null,
+    "cachedInputPer1M": null,
+    "_verified": null
+  },
+
+  "deepseek-v4-flash": {
+    "inputPer1M": 0.14,
+    "outputPer1M": 0.28,
+    "cachedInputPer1M": 0.0028,
+    "_verified": "api-docs.deepseek.com/quick_start/pricing, checked 2026-07-17. inputPer1M is the cache-miss rate; cachedInputPer1M is the cache-hit rate."
+  },
+  "deepseek-v4-pro": {
+    "inputPer1M": 0.435,
+    "outputPer1M": 0.87,
+    "cachedInputPer1M": 0.003625,
+    "_verified": "api-docs.deepseek.com/quick_start/pricing, checked 2026-07-17. inputPer1M is the cache-miss rate; cachedInputPer1M is the cache-hit rate."
+  },
+
+  "qwen-plus": {
+    "inputPer1M": null,
+    "outputPer1M": null,
+    "_verified": null,
+    "_note": "Alibaba Cloud Model Studio pricing is region-specific — check your console's pricing page."
+  },
+  "qwen-max": {
+    "inputPer1M": null,
+    "outputPer1M": null,
+    "_verified": null,
+    "_note": "Alibaba Cloud Model Studio pricing is region-specific — check your console's pricing page."
+  },
+
+  "azure-openai": {
+    "inputPer1M": null,
+    "outputPer1M": null,
+    "cachedInputPer1M": null,
+    "_verified": null,
+    "_note": "No single universal rate — depends on your specific Azure deployment/region/tier. Fill in from your own Azure pricing page, not a generic OpenAI rate card."
+  },
+
+  "deepl": {
+    "perMillionChars": null,
+    "_verified": null,
+    "_note": "deepl.com/pro-api's API rate table did not render via automated fetch (likely client-side rendered) — fill in the current per-character rate manually before trusting DeepL cost figures."
+  },
+
+  "gpt-5-mini": { "inputPer1M": null, "outputPer1M": null, "cachedInputPer1M": null, "_verified": null, "_note": "Azure AI Foundry deployment pricing — verify against your Foundry resource's cost/pricing page, not a generic OpenAI rate card." },
+  "gpt-5-nano": { "inputPer1M": null, "outputPer1M": null, "cachedInputPer1M": null, "_verified": null, "_note": "Azure AI Foundry deployment pricing — verify against your Foundry resource's cost/pricing page, not a generic OpenAI rate card." },
+  "gpt-5-chat": { "inputPer1M": null, "outputPer1M": null, "cachedInputPer1M": null, "_verified": null, "_note": "Azure AI Foundry deployment pricing — verify against your Foundry resource's cost/pricing page, not a generic OpenAI rate card." },
+  "gpt-5.1": { "inputPer1M": null, "outputPer1M": null, "cachedInputPer1M": null, "_verified": null, "_note": "Azure AI Foundry deployment pricing — verify against your Foundry resource's cost/pricing page, not a generic OpenAI rate card." },
+  "gpt-4.1": { "inputPer1M": null, "outputPer1M": null, "cachedInputPer1M": null, "_verified": null, "_note": "Azure AI Foundry deployment pricing — verify against your Foundry resource's cost/pricing page, not a generic OpenAI rate card." },
+  "gpt-4.1-nano": { "inputPer1M": null, "outputPer1M": null, "cachedInputPer1M": null, "_verified": null, "_note": "Azure AI Foundry deployment pricing — verify against your Foundry resource's cost/pricing page, not a generic OpenAI rate card." },
+  "o3": { "inputPer1M": null, "outputPer1M": null, "cachedInputPer1M": null, "_verified": null, "_note": "Azure AI Foundry deployment pricing — verify against your Foundry resource's cost/pricing page. Also a reasoning model: confirm it accepts this script's request shape (system role + temperature) before trusting any results, not just the rate." },
+  "Kimi-K2.6": { "inputPer1M": null, "outputPer1M": null, "cachedInputPer1M": null, "_verified": null, "_note": "Azure AI Foundry deployment pricing — model/version naming not independently verified; confirm it exists in your catalog before trusting a rate or a result." },
+  "Kimi-K2.5": { "inputPer1M": null, "outputPer1M": null, "cachedInputPer1M": null, "_verified": null, "_note": "Azure AI Foundry deployment pricing — model/version naming not independently verified; confirm it exists in your catalog before trusting a rate or a result." },
+  "DeepSeek-V4-Flash": { "inputPer1M": null, "outputPer1M": null, "cachedInputPer1M": null, "_verified": null, "_note": "This is the Foundry-hosted deployment, keyed by its exact deployment name — do NOT copy the rate from the lowercase 'deepseek-v4-flash' entry above, which is DeepSeek's own direct API price. Azure-hosted pricing for the same model is not guaranteed to match." },
+  "DeepSeek-V4-Pro": { "inputPer1M": null, "outputPer1M": null, "cachedInputPer1M": null, "_verified": null, "_note": "This is the Foundry-hosted deployment, keyed by its exact deployment name — do NOT copy the rate from the lowercase 'deepseek-v4-pro' entry above, which is DeepSeek's own direct API price. Azure-hosted pricing for the same model is not guaranteed to match." }
+}
