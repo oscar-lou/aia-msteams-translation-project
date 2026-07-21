@@ -96,7 +96,7 @@
     "id": "sample-17",
     "category": "Passive-Aggressive / Diplomatic (English)",
     "text": "I love how creative the marketing team was with this timeline, but for those of us bound by the linear progression of time, could we perhaps stick to the dates agreed upon in Q1?",
-    "teams_native_translation": ""
+    "teams_native_translation": "我很喜歡行銷團隊在這個時間軸上的創意，但對於我們這些被時間線性推進束縛的人來說，是否可以堅持第一季約定的日期？"
   },
   {
     "id": "sample-18",
@@ -114,7 +114,7 @@
     "id": "sample-20",
     "category": "Konglish Slangs",
     "text": "份report仲係太樣衰，嗱嗱聲同我死返去執靚佢",
-    "teams_native_translation": ""
+    "teams_native_translation": "This report is still too bad, go ahead and clean it up."
   },
   {
     "id": "sample-21",
@@ -126,6 +126,66 @@
     "id": "sample-22",
     "category": "Vendor Management & Dodging Responsibility",
     "text": "喂，間 vendor 拖咗成個禮拜都未交貨，你仲同我喺度耍太極？單 project 已經燒到埋身，過兩日上 board 點拆局呀？唔好再諗住側側膊唔多覺，即刻打去捽佢哋交貨！",
+    "teams_native_translation": "Hey, this vendor has been delaying delivery for a whole week, are you still playing Tai Chi with me? The single project has already burned to the point where it will be on the board in a couple of days, how will it be dismantled? Don't think about it anymore, don't worry about it, call them immediately to grab them for delivery!"
+  },
+  {
+    "id": "sample-23",
+    "category": "Scope Creep & Budget Refusals",
+    "text": "個客又無啦啦改 scope，真係當我哋係神仙呀？日日朝令夕改，啲 budget 又企硬唔肯加。你同佢講，再係咁加 requirement 我哋就斬纜。我唔會要班𡃁再捱通宵同佢死過。",
+    "teams_native_translation": ""
+  },
+  {
+    "id": "sample-24",
+    "category": "Office Politics & Incompetence",
+    "text": "Peter 條友明明係個 free-rider，做嘢又揦西，點知轉個頭就升咗做 Director。咪又係靠日日同大老闆擦鞋！而家佢上位，我哋呢班做死狗嘅就真係喊都無謂，準備硬食佢啲鑊氣。",
+    "teams_native_translation": ""
+  },
+  {
+    "id": "sample-25",
+    "category": "The 'Idiom Soup' (Mixed Metaphors)",
+    "text": "Before we try to boil the ocean on the Q3 roadmap, let’s put a pin in it and double-click on the low-hanging fruit. I don't want us spinning our wheels in the weeds. Let’s run the MVP up the flagpole, see who salutes, and make sure we’re actually moving the needle.",
+    "teams_native_translation": ""
+  },
+  {
+    "id": "sample-26",
+    "category": "Passive-Aggressive Diplomacy",
+    "text": "I might be missing something here, but this doesn't quite align with what we white-boarded on Tuesday. Going forward, I’d love it if we could avoid working in silos so we don't have to reinvent the wheel at the 11th hour. Just bumping this to the top of your inbox as it's now a hard blocker for my team.",
+    "teams_native_translation": ""
+  },
+  {
+    "id": "sample-27",
+    "category": "Generational Code-Switching (Gen Z meets C-Suite)",
+    "text": "Ngl, the burn rate on this campaign is giving me major anxiety and the ROI is mid at best. Management is lowkey going to freak out if we don't pivot hard by EOD. The market vibe shift is real, so let’s stop leaving money on the table and ship something that actually slaps.",
+    "teams_native_translation": ""
+  },
+  {
+    "id": "sample-28",
+    "category": "The Airport Run (Acronyms & Typos)",
+    "text": "pls tell me the SME signed off on the SOW for the APAC rollout b4 EOD. im at the gate rn cant join the sync. if legal pushes back again jst escalate to VP. dont let this slip to Q4, thx!!",
+    "teams_native_translation": ""
+  },
+  {
+    "id": "sample-29",
+    "category": "Sarcastic Dev-Ops Disaster (The 'Friday Deploy')",
+    "text": "Absolutely phenomenal work on that hotfix, guys, truly. Pushing straight to prod on a Friday afternoon? Chef's kiss. Now the whole API is borked, the mothership is breathing down my neck, and we're officially on a sev-1 bridge. Let's nuke it, roll back to Tuesday's build, and pretend this dumpster fire never happened.",
+    "teams_native_translation": ""
+  },
+  {
+    "id": "sample-30",
+    "category": "VC/Startup Finance Bro Speak",
+    "text": "The cap table is a total dog's breakfast right now and our burn is astronomical. If we don't start trimming the fat and extending the runway, we're gonna be staring down the barrel of a brutal down round by Q1. Stop chasing shiny objects, focus on the core TAM, and let's get to default alive before the board pulls the plug.",
+    "teams_native_translation": ""
+  },
+  {
+    "id": "sample-31",
+    "category": "The C-Suite 'Stream of Consciousness'",
+    "text": "just off the horn w/ legal on the M&A docs. redlines are a total bloodbath. they want us to take the haircut on the IP indemnification. absolutely not flying. ping sarah to jump on a quick sync, need to get our ducks in a row and push back hard b4 the 3pm. cc me on the thread but hold off on sending the deck to the buy-side.",
+    "teams_native_translation": ""
+  },
+  {
+    "id": "sample-32",
+    "category": "Toxic Positivity (The 'Sandwich' Feedback)",
+    "text": "I absolutely love the passion you brought to this ideation phase, it's so great to see you leaning in! However, I think we have an opportunity to recalibrate the deliverables to better synergize with our current North Star metrics. Let's sunset this current iteration and take it offline to whiteboard a more optimized paradigm. Keep up the amazing energy though!",
     "teams_native_translation": ""
   }
 ]
