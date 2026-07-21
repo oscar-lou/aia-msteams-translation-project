@@ -1,7 +1,7 @@
 [
   {
     "id": "sample-1",
-    "text": "三送飯鐵粉",
+    "text": "三鎹飯鐵粉",
     "teams_native_translation": "Third, sending rice with iron fans"
   },
   {
@@ -78,18 +78,54 @@
     "id": "sample-14",
     "category": "Corporate Slang (Cantonese)",
     "text": "喂，尋晚單p1又要我幫手執手尾。大佬，真係頂唔順，佢又射波比我。下晝個meeting你幫手hold住個客先，我仲要嘔緊個deck。",
-    "teams_native_translation": ""
+    "teams_native_translation": "Hey, last night, single p1 asked me to help clean up the aftermath. Big brother, I really couldn't take it anymore, and he shot the ball at me again. In the afternoon meeting, you help hold the guest first, and I'm still throwing up."
   },
   {
     "id": "sample-15",
     "category": "Corporate Slang (Taiwanese)",
     "text": "關於這次的專案，大家可能要再接地氣一點。之前的規劃有點不痛不癢，客群完全沒有感。主管現在在敲碗等新方向，我們不能再互推皮球、瘋狂甩鍋了，這次一定要做出亮點。",
-    "teams_native_translation": ""
+    "teams_native_translation": "Regarding this project, people might want to be a bit more down-to-earth. The previous plan was rather indifferent, with no customer base at all. Supervisors are now eagerly waiting for new directions. We can't keep passing the buck or passing the buck-this time we must create something highlight."
   },
-      {
+  {
     "id": "sample-16",
     "category": "Corporate Slang (Taiwanese)",
     "text": "頭先個會真係多餘，老細又係度畫大餅，講埋啲模稜兩可嘅嘢。佢仲要塞錢入我袋咁款，叫我哋要『有溫度』。我都費事同佢詏，唯有扮聽話，唯唯諾諾算數。",
+    "teams_native_translation": "That meeting just now was really unnecessary, and the boss was just making empty promises and saying all sorts of ambiguous things. He even stuffed money into my pocket, telling us to be 'warm.' I couldn't be bothered to argue with him, so I just pretended to obey and meekly agreed."
+  },
+  {
+    "id": "sample-17",
+    "category": "Passive-Aggressive / Diplomatic (English)",
+    "text": "I love how creative the marketing team was with this timeline, but for those of us bound by the linear progression of time, could we perhaps stick to the dates agreed upon in Q1?",
+    "teams_native_translation": ""
+  },
+  {
+    "id": "sample-18",
+    "category": "High-Speed Typos & Abbreviations (The Real-World Test) (English)",
+    "text": "plz snd th rpt to jhn asap im brding flight rn cnt revw. make sr figures align w yday presntatn thx",
+    "teams_native_translation": "請盡快向JHN返送，我正在準備飛行RN並完成任務。讓SR數字與Yday對齊，感謝。"
+  },
+  {
+    "id": "sample-19",
+    "category": "5. HR Disputes & Emotional Volatility (The Safety Guardrail Test)",
+    "text": "This vendor is completely taking the piss. They’ve half-assed the deliverables for three weeks straight and expect us to just swallow the invoice. I’m not signing this garbage.",
+    "teams_native_translation": "這個攤販完全是在耍我。他們連續三週半吊子地交付成果，還期待我們直接吞下發票。我才不簽這種垃圾。"
+  },
+  {
+    "id": "sample-20",
+    "category": "Konglish Slangs",
+    "text": "份report仲係太樣衰，嗱嗱聲同我死返去執靚佢",
+    "teams_native_translation": ""
+  },
+  {
+    "id": "sample-21",
+    "category": "Konglish Slangs 2",
+    "text": "喂，你份 deck 搞乜鬼呀？排版亂到一 pat 屎咁，肉酸到完全出唔到街。陣間就開 weekly 啦，即刻同我死返去執靚佢，如果唔係等陣齊齊俾大老闆照肺呀！",
+    "teams_native_translation": "Hey, what the heck are you doing with your deck? The layout is so messy it's like a mess, and the meat is so sour, you can't even get out on the street. They'll start weekly soon enough. Go clean it up with me right now, or else we'll all get scolded by the big boss later!"
+  },
+  {
+    "id": "sample-22",
+    "category": "Vendor Management & Dodging Responsibility",
+    "text": "喂，間 vendor 拖咗成個禮拜都未交貨，你仲同我喺度耍太極？單 project 已經燒到埋身，過兩日上 board 點拆局呀？唔好再諗住側側膊唔多覺，即刻打去捽佢哋交貨！",
     "teams_native_translation": ""
   }
 ]
