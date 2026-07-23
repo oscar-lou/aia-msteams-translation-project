@@ -121,5 +121,51 @@
     "outputPer1M": 3.48,
     "cachedInputPer1M": 0.15,
     "_verified": "azure.microsoft.com/en-us/pricing/details/ai-foundry-models/deepseek/ (official Microsoft Foundry Models pricing page for DeepSeek), via search-engine content extraction checked 2026-07-20 — same direct-WebFetch-timeout caveat as Kimi-K2.6 above. Input adjusted from a previously-entered 1.74 to 1.75 to match this source; output (3.48) already matched. Zero matching SKU in the Azure Retail Prices API itself — see Kimi-K2.6's note on likely Marketplace billing. Also see the Microsoft Q&A thread on this exact model's Foundry-vs-direct-API billing discrepancy (~4.5x) — this Foundry-specific rate is the correct one to use here regardless, just flagging the discrepancy exists."
+  },
+
+  "gpt-5.2": {
+    "inputPer1M": 1.75,
+    "outputPer1M": 14.00,
+    "cachedInputPer1M": 0.175,
+    "_verified": "developers.openai.com/api/docs/models/gpt-5.2, checked 2026-07-20. OpenAI direct-API rate, same Azure-parity caveat as gpt-5-mini above — zero matching SKU in Azure's Retail Prices API."
+  },
+  "gpt-4.1-mini": {
+    "inputPer1M": 0.40,
+    "outputPer1M": 1.60,
+    "cachedInputPer1M": 0.10,
+    "_verified": "developers.openai.com/api/docs/models/gpt-4.1-mini, checked 2026-07-20. OpenAI direct-API rate, same Azure-parity caveat as gpt-4.1 above — Azure's Retail Prices API has only fine-tuning meters for this model family, no base consumption meter to cross-check against."
+  },
+  "gpt-4o": {
+    "inputPer1M": 2.50,
+    "outputPer1M": 10.00,
+    "cachedInputPer1M": 1.25,
+    "_verified": "developers.openai.com/api/docs/models/gpt-4o, checked 2026-07-20. OpenAI direct-API rate, same Azure-parity caveat as gpt-5-mini above — not independently checked against Azure's Retail Prices API for this specific (older-generation) model."
+  },
+  "gpt-4o-mini": {
+    "inputPer1M": 0.15,
+    "outputPer1M": 0.60,
+    "cachedInputPer1M": 0.075,
+    "_verified": "developers.openai.com/api/docs/models/gpt-4o-mini, checked 2026-07-20. OpenAI direct-API rate, same Azure-parity caveat as gpt-5-mini above."
+  },
+  "gpt-chat-latest": {
+    "inputPer1M": null,
+    "outputPer1M": null,
+    "cachedInputPer1M": null,
+    "_verified": null,
+    "_note": "Not a model name independently confirmed to exist — OpenAI's known '-chat-latest' naming pattern is versioned (e.g. 'gpt-5.2-chat-latest'), not bare. Double-check this exact string against your Foundry Deployments tab; it may need a version prefix, in which case update this key to match."
+  },
+  "DeepSeek-R1": {
+    "inputPer1M": null,
+    "outputPer1M": null,
+    "cachedInputPer1M": null,
+    "_verified": null,
+    "_note": "Legacy — DeepSeek's own current pricing page (checked 2026-07-20) lists only deepseek-v4-flash/-pro as active; the 'deepseek-reasoner' name R1 maps to deprecates 2026-07-24 15:59 UTC and today is just an alias into deepseek-v4-flash's 'thinking mode'. Whether this Foundry deployment name still resolves, and at what rate, is untested — don't assume it matches deepseek-v4-flash's rate above."
+  },
+  "DeepSeek-R1-0528": {
+    "inputPer1M": null,
+    "outputPer1M": null,
+    "cachedInputPer1M": null,
+    "_verified": null,
+    "_note": "Same legacy status as DeepSeek-R1 above, likely more so — this specific dated snapshot doesn't appear on DeepSeek's current pricing page at all (checked 2026-07-20), suggesting it may already be fully retired on their own API even if the Foundry deployment still resolves."
   }
 }

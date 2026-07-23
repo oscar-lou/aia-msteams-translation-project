@@ -304,7 +304,11 @@ async function translateBatchAzureFoundry(msgs, endpoint, apiKey, deployment, si
         { role: "system", content: buildBatchSystemPrompt(singleMessage) },
         { role: "user", content: userContent },
       ],
-      temperature: 0.2,
+      // Foundry model deployments (across this whole screening list, not just
+      // reasoning models like o3) only support the default temperature of 1.0
+      // — sending any other value 400s. Every other engine in this file keeps
+      // its own temperature setting; this constraint is specific to Foundry.
+      temperature: 1.0,
     }),
   });
   if (!resp.ok) {

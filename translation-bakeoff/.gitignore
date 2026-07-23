@@ -3,3 +3,5 @@ node_modules/
 .translations-cache.json
 *.log
 .DS_Store
+results-blind.md
+results-blind-key.json
